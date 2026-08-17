@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<!-- v3 case study architecture, reference implementation.
+     Split from the original single Codefi page: this one carries the PRODUCT DESIGNER half
+     only. The growth/strategy half (baseline, thesis, pivot, tooling,
+     events, cms) moves to codefi-growth.html.
+
+     Structure per Case-Study-Architecture-Spec.md:
+       header.pcover   one per page, full-height, contains nothing but its head
+       section.chap    the repeatable unit, height always from content
+       p.tween         unnumbered connective line between chapters
+
+     The only <section> children of .case-prose are chapters, which is what
+     lets .chap:nth-of-type() own the striping. Do not add a <section> at
+     that level for anything else. -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" href="img/favicon.png">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Codefi, product design, Shantanu Kashyap</title>
+<meta name="description" content="Designing the handoff from a conversational AI into a structured product. Sole product designer on Traction Studio AI.">
+<meta property="og:title" content="Codefi, product design, Shantanu Kashyap">
+<meta property="og:description" content="Designing the handoff from a conversational AI into a structured product.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  :root { --accent: #483174; --accent-soft: #EFECF3; }
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+<div class="progress" aria-hidden="true"></div>
+
+<nav class="nav">
+  <div class="wrap">
+    <a class="mark" href="index.html">
+      <span class="glyph">SK</span>
+      <span class="mark-name">Shantanu Kashyap</span>
+    </a>
+    <div class="navlinks">
+      <a href="index.html" class="current" aria-current="true">Work</a>
+      <a href="about.html">About</a>
+      <a href="https://drive.google.com/file/d/1TjVQ_KrvfItAI4MKjaeZ77ZZIEZ_f_Ml/view?usp=sharing" target="_blank" rel="noopener">Resume</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main" tabindex="-1">
+<div class="wrap">
+
+  <!-- ============================ HEADER ============================ -->
+  <div class="intro-band intro-band--dark intro-band--split">
+    <header class="case-hero case-hero--side">
+      <div class="case-hero-copy">
+        <span class="kicker kicker--accent" data-reveal style="--i:0">Traction Studio AI · Codefi · Product Designer · Sept 2025 – present</span>
+        <h1 data-reveal style="--i:1">Designing the handoff from a conversational AI into a structured product</h1>
+      </div>
+
+      <div class="hero-shots hero-shots--stack" data-reveal style="--i:2">
+        <div class="hshot hshot--1" style="--i:0">
+          <img class="shot-img" src="img/codefi-product-hero-onboarding.png" alt="Onboarding sequence" loading="eager">
+        </div>
+        <div class="hshot hshot--2" style="--i:1">
+          <img class="shot-img" src="img/codefi-product-hero-scale-dashboard.png" alt="Scale dashboard" loading="eager">
+        </div>
+        <div class="hshot hshot--3" style="--i:2">
+          <img class="shot-img" src="img/codefi-product-hero-navigation.png" alt="Updated navigation &amp; patterns" loading="eager">
+        </div>
+      </div>
+  </header>
+    <svg class="case-hero-wave" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0,56 C 480,6 960,102 1440,40 L1440,120 L0,120 Z"></path>
+    </svg>
+  </div>
+
+  <div class="intro-info">
+    <div class="case-facts" data-reveal style="--i:3">
+      <div><span class="k">Role</span><span class="v">First and only designer</span></div>
+      <div><span class="k">Team</span><span class="v">4-person engineering team, 1 PO</span></div>
+      <div><span class="k">Surface</span><span class="v">Traction Studio AI</span></div>
+      <div><span class="k">Status</span><span class="v">GA</span></div>
+    </div>
+
+    <div class="tldr" id="tldr" data-reveal style="--i:4">
+      <span class="tldr-lbl">In short</span>
+      <div class="tldr-split">
+        <p class="tldr-lead">I own the handoff between a conversational AI and the structured product it becomes. I own it alone.</p>
+        <div class="tldr-facts">
+          <p><b>Scope:</b> 0→1, solo. The entire paid surface, not a slice of it.</p>
+          <p><b>Pattern:</b> reframed a required wait as onboarding, four separate modules as one shared system, and now I'm designing for a model that can be confidently wrong.</p>
+          <p><b>Verification:</b> the onboarding sequence shipped. Scale and the AI patterns are still in progress, with no outcome data yet.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="case-transition split" data-reveal>
+      <p class="lede">As the only designer on Traction Studio AI, Codefi's AI-native founder platform, I designed how a conversational assistant hands its work off to a structured SaaS surface, then built that surface's entire paid experience from scratch alongside our PO.</p>
+      
+    </div>
+  </div>
+
+  <aside class="rail" aria-label="Section navigation">
+    <div class="rail-lbl">On this page</div>
+    <div class="rail-scroll">
+      <ol>
+        <li><a href="#latency"><span class="n">01</span> Turning a wait into onboarding</a></li>
+        <li><a href="#scale"><span class="n">02</span> The paid product, built from scratch</a></li>
+        <li><a href="#ai-patterns"><span class="n">03</span> Designing for a model that can be wrong</a></li>
+        <li><a href="#craft"><span class="n">04</span> Beyond the prototype</a></li>
+      </ol>
+    </div>
+  </aside>
+
+  <!-- ============================ BODY ============================ -->
+  <div class="case-body case-body--lilac">
+
+    <div class="case-prose">
+
+      <!-- ================= PAGE COVER =================
+           Full-height. The detailed handoff diagram lives in chapter 01,
+           which is the chapter that actually explains the mechanism. This
+           visual is deliberately simpler and more iconographic, a poster
+           read of the same idea (three converging into one), not a repeat
+           of chapter 01's labeled technical version. Reuses .figure, the
+           same "light card floating on dark" pattern already proven on
+           Home's hero and Receipts band, so this isn't a new technique. -->
+      <header class="pcover">
+        <div class="pcover-head" data-reveal>
+          <span class="kicker">
+            <span class="chip-word fig-pop" style="--i:0">Product Designer</span>
+            <span class="chip-word fig-pop" style="--i:1">AI-native product</span>
+            <span class="chip-word fig-pop" style="--i:2">0→1</span>
+          </span>
+          <h2>Three chat-based modules feed one SaaS product</h2>
+          <p class="dek">Traction Studio AI starts founders in <b>Build</b>, where Ideation and Ready to Raise both run as chat. From there they cross into <b>Scale</b>, a full SaaS surface with a CRM, sales funnel, build board, investor relations, and now agents. Ready to Launch sits on the far side of that crossing, a third chat surface where founders work through go to market planning.</p>
+          <p class="dek">Every artifact a founder produces in chat has to become structured state in the SaaS. <b>Most AI products are either fully conversational or fully structured, not both</b>. This one had to be.</p>
+        </div>
+        <div class="pcover-visual" data-reveal style="--i:2">
+          <img class="pcover-img" src="img/transitionfromchattosaas.png" alt="Three small chat cards feed a single larger structured panel, a simplified poster version of the chat-to-SaaS handoff." loading="lazy" decoding="async">
+        </div>
+      </header>
+
+      <!-- ================= CHAPTER 01 · latency ================= -->
+      <section class="chap" id="latency">
+
+        <div class="chap-head" data-reveal>
+          <span class="chap-kicker"><span class="idx">01</span> Product decision · Shipped</span>
+          <h2>Turning a required wait into onboarding</h2>
+          <p class="dek">A founder finishes Build and crosses into Scale for the first time. Standing that environment up, and migrating everything they made in chat into structured state, takes engineering 5 to 60 seconds. The initial request was a loading screen.</p>
+          <div class="case-facts">
+            <div><span class="k">Surface</span><span class="v">Build → Scale, first run</span></div>
+            <div><span class="k">Role</span><span class="v">Sole designer</span></div>
+            <div><span class="k">Window</span><span class="v">5–60 seconds</span></div>
+            <div><span class="k">Status</span><span class="v">Shipped</span></div>
+          </div>
+        </div>
+
+        <div class="beat beat--illo" data-reveal>
+          <h3>The core decision</h3>
+          <div class="split split--lead">
+            <p>The request was a loading screen. Rather than build it, I went and asked what the wait was actually for, why the range was that wide, and what would be different on the other side of it. Two things came out of that. Founders arrive at Scale having never seen it, so <b>onboarding was going to be the next thing asked of me anyway</b>. And they are already stopped, already expecting the product to appear. Putting the orientation in the window collapsed two pieces of work into one, and meant neither had to be built twice.</p>
+            <p>So: a <b>5-slide onboarding sequence</b> instead of a spinner. <b>That is the exact window engineering needed</b>, spent on the thing the founder needed next.</p>
+            <ul>
+              <li>Reframes a stated requirement ("loading screen") into a value-additive moment ("onboarding")</li>
+              <li>Solves two unmet needs at once: the engineering latency buffer, and first-time orientation to a surface the user has never seen</li>
+              <li><b>Five slides is not an arbitrary number</b>: Scale has five tabs, so the sequence runs one tab per slide, in the order a founder meets them</li>
+              <li>Creates a reusable pattern for any future moment where the product does heavy backend work</li>
+            </ul>
+          </div>
+        
+          <figure class="case-illo">
+            <div class="illo-frame">
+                <img src="img/codefi-latency-waiting.png"
+                 alt="A founder holding an open laptop, staring at a blank screen with no sign anything is happening."
+                 width="1024" height="768" loading="lazy" decoding="async">
+              <span class="illo-tag fig-pop" style="--x:1%;--y:4%;--i:1">crosses into Scale</span>
+              <span class="illo-tag fig-pop illo-tag--r" style="--x:1%;--y:20%;--i:2">screen goes blank</span>
+              </div>
+              <figcaption class="cap">A founder waiting on a blank screen.</figcaption>
+            </figure>
+        </div>
+
+        <figure class="case-shot" data-reveal>
+          <img class="case-shot-img" src="img/codefi-product-latency-onboarding-slides.png" alt="The 5-slide onboarding sequence that replaces the loading state." loading="lazy" decoding="async">
+          <figcaption class="cap">The 5-slide onboarding sequence, replacing the loading state.</figcaption>
+        </figure>
+
+        <p class="beat beat--wide" data-reveal>The continue button stays disabled if a founder gets through the slides first, because there is nowhere to send them yet. <b>The tooltip is for the people who skip onboarding</b>, hit a dead button, and would assume it was broken. It says the environment is still being set up and nothing about why, because the reason is ours, not theirs.</p>
+
+      </section>
+
+      <!-- ================= CHAPTER 02 · scale ================= -->
+      <section class="chap" id="scale">
+
+        <div class="chap-head" data-reveal>
+          <span class="chap-kicker"><span class="idx">02</span> Product design, 0→1 · In progress</span>
+          <h2>Four modules, designed as one system</h2>
+          <p class="dek">Once a founder crosses the handoff, Scale is where they actually run the company.</p>
+          <div class="case-facts">
+            <div><span class="k">Surface</span><span class="v">Scale, Traction Studio AI</span></div>
+            <div><span class="k">Role</span><span class="v">Only designer, with the PO</span></div>
+            <div><span class="k">Scope</span><span class="v">Sales, ops, investor relations, MVP tracking, agents</span></div>
+            <div><span class="k">Status</span><span class="v">In progress</span></div>
+          </div>
+        </div>
+
+        <div class="beat beat--illo" data-reveal>
+          <h3>The problem: four features that happen to share a login</h3>
+          <div class="split">
+            <p>Sales, ops, investor relations and MVP tracking were being specced as separate modules, with agent features layering in as the product's agentic direction firmed up. Scoped independently, each would have arrived with its own table pattern, its own empty state, its own idea of what a destructive action looks like.</p>
+            <p><b>The founder pays for that in relearning cost every time they switch context</b>, which is constantly.</p>
+          </div>
+        
+          <figure class="case-illo">
+            <div class="illo-frame">
+                <img src="img/codefi-scale-four-tools.png"
+                 alt="A founder trying to hold four separate mismatched panels at once as they slip out of her arms."
+                 width="1024" height="768" loading="lazy" decoding="async">
+              <span class="illo-tag fig-pop" style="--x:1%;--y:3%;--i:1">four separate tools</span>
+              <span class="illo-tag fig-pop illo-tag--r" style="--x:1%;--y:88%;--i:2">switching between them all day</span>
+              </div>
+              <figcaption class="cap">One founder, four separate tools.</figcaption>
+            </figure>
+        </div>
+
+        <div class="beat beat--wide" data-reveal>
+          <h3>The decision: one shared system across all four</h3>
+          <div class="split split--lead">
+            <p>Working closely with our PO, pressure-testing the PRD, surfacing flow problems and iterating collaboratively to final designs, I designed <b>the entire paid surface from scratch as one system</b>: a shared component library across all four modules, down to full light/dark theming, <b>so a pattern learned in one place holds in the next</b>.</p>
+            <div class="kv-group">
+              <div class="kv"><span class="k">Scope</span><span class="v">Sales, ops, investor relations, MVP tracking, agents, on one shared component system</span></div>
+              <div class="kv"><span class="k">Ownership</span><span class="v">Every screen in the paid surface, 0→1, with the PO on scope and requirements</span></div>
+              <div class="kv"><span class="k">Boundary</span><span class="v">I didn't conceptualise Scale itself, that's the PO's call. I own the UI and UX conceptualisation of everything inside it</span></div>
+              <div class="kv"><span class="k">Got wrong early</span><span class="v">Brought the PO changes that were mostly aesthetic, layouts that felt more responsive, before asking why things were specced the way they were. A few were right. Most were me redesigning around a constraint I hadn't bothered to find out about. I ask first now</span></div>
+              <div class="kv"><span class="k">Status</span><span class="v">In progress</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="beat" data-reveal>
+          <h3>The research I pushed for, and why losing that argument was right</h3>
+          <div class="split">
+            <p>I wanted to do more research before designing. The team was in ship-1.0-and-iterate mode, and I lost that one. They were right, and working out why changed how I choose a method rather than just how I felt about the decision.</p>
+            <p><b>Research has a shelf life</b>, and the length of it depends on how fast the ground moves. Construction estimating hasn't changed in decades, so what I learned there held for three years. This is the opposite case. Since I joined, general AI chat tools got good enough that "a structured system beats a chat window" stopped being our differentiator, and the product has moved because of it. <b>Research done in month one would have described a market that no longer existed by month six</b>.</p>
+          </div>
+          <p style="max-width:none">So the method follows the domain. Stable context: research, design, iterate, launch. Context moving underneath you: build, ship, watch what breaks, iterate. Choosing the wrong one of those costs about the same either way, and I had been treating the first as the professional default rather than as one of two options.</p>
+        </div>
+
+        <figure class="case-shot" data-reveal>
+          <img class="case-shot-img" src="img/codefi-product-scale-component-system.png" alt="Scale's shared component system across sales, ops, investor relations, and agents, light and dark." loading="lazy" decoding="async">
+          <figcaption class="cap">Scale's shared component system across sales, ops, investor relations, and agents, light and dark.</figcaption>
+        </figure>
+
+        <div class="mini-grid mini-grid--2" data-reveal>
+          <div class="mini">
+            <h4>Guided compliance form</h4>
+            <p>The form had been written for founders of any kind, so software founders were being asked whether they had physical store locations, and to pick a category from a list they had never seen. Both are support tickets waiting to happen. I argued for contextual examples and pre-filling what we already knew.</p>
+            <span class="status status--live">In progress</span>
+          </div>
+          <div class="mini">
+            <h4>Making the assistant findable</h4>
+            <p>It sat tucked in a corner where it read as a help widget, so founders were not finding the most useful thing in the product. Moved it and gave it a soft glow, so discovery happens on its own rather than needing a tour to explain it.</p>
+            <span class="status">Shipped</span>
+          </div>
+        </div>
+
+        <div class="beat" data-reveal>
+          <h3>Pricing: three ways to cover a cost, and why one line won</h3>
+          <div class="split">
+            <p>Scale runs a live environment per founder, costing real money from the moment it starts. We wanted it running the second someone entered, because agents producing something on arrival is the value. So the cost lands before anyone knows whether that user pays.</p>
+            <p>The model before this was a flat fee per project, with one step free so a founder could judge the output before paying. It assumed someone committed enough to a single idea to put several hundred dollars behind it largely sight unseen. <b>Early-stage founders are not committed to one idea, they are shopping between several</b>, and that assumption broke first.</p>
+            <p>Three options were on the table for what replaced it. <b>Absorb it</b>, and run instances for people who had not paid. <b>Raise the price of Build</b> to subsidise it, then charge again for actually using Scale. Or <b>one price at one gate</b>. I argued for the last, and my reason was as much marketing as product: I was going to be the person selling this, and a page that advertises one number then asks for a second the moment you finish a step converts worse and explains worse. <b>A pricing model has to be sayable in one sentence.</b></p>
+          </div>
+        </div>
+
+        <div class="note note--split" data-reveal><span class="lbl">How disagreements get settled here</span><div class="note-body"><p>There are no reworked-it-twice stories on this page, and that is not because nobody pushes back. I work with our PO closer to a co-owner than a recipient: approaches, trade-offs and the reasons for and against get talked through before I open a file.</p><p>Disagreement surfaces as a conversation about the spec rather than a round of discarded mockups. <b>Rework still happens</b>, when user sessions say it should, and then we run the same conversation again with better information. What has not happened here is rework caused by never having had the conversation, which is the clearest difference between this job and the last one.</p></div></div>
+
+        <div class="note" data-reveal><span class="lbl">Where this stands</span><div class="note-body">Scale is still in progress, not fully shipped. The system and surface are designed end to end.</div></div>
+
+      </section>
+
+      <p class="tween" data-reveal>Those decisions assume the product gives the founder a right answer. A model-driven one can't.</p>
+
+      <!-- ================= CHAPTER 04 · ai-patterns =================
+           DELIBERATELY UNFINISHED. This chapter was inserted after the
+           other three were already laid out, as the live test of the
+           insertion requirement: it carries a head, one beat and a
+           receipt, and nothing above or below it needed editing to make
+           room for it. Striping recomputed itself. Fill in the beats and
+           artifacts as they become shareable; the chapter will absorb
+           them without any structural change. -->
+      <section class="chap" id="ai-patterns">
+
+        <div class="chap-head" data-reveal>
+          <span class="chap-kicker"><span class="idx">03</span> AI-native patterns · Shipping in pieces</span>
+          <h2>Designing for a model that can be wrong</h2>
+          <p class="dek">A conversational product makes a promise a deterministic one doesn't have to: that <b>the thing on screen might be confidently incorrect</b>. That is an interface problem before it is a model problem.</p>
+          <div class="case-facts">
+            <div><span class="k">Surface</span><span class="v">Traction Studio AI, across chat and Scale</span></div>
+            <div><span class="k">Role</span><span class="v">Sole designer</span></div>
+            <div><span class="k">Scope</span><span class="v">Awareness, structure, transparency</span></div>
+            <div><span class="k">Status</span><span class="v">Shipping in pieces</span></div>
+          </div>
+        </div>
+
+        <div class="beat beat--illo" data-reveal>
+          <h3>Three patterns, applied across the product</h3>
+          <div class="split split--lead">
+            <p>These aren't features so much as a set of defaults I apply wherever the model touches the interface, and they're <b>the part of this job with the least existing convention to borrow from</b>.</p>
+            <p>The same question came up larger when the product's agentic direction was being set. <b>I argued it should automate what a founder can already do by hand, not quietly take over running their company.</b> The test is whether someone can still answer for a decision the product made for them. That position held, and it is the line I would defend hardest on any AI product.</p>
+            <p><b>Confidence scores were the obvious pattern and we turned them down</b>, on positioning rather than interface. Traction Studio should read as a programme a founder is working through, and a percentage beside the output breaks that frame in one glance. Once it reads as general-purpose AI, it competes with general-purpose AI.</p>
+            <ul>
+              <li><b>Contextual awareness indicators:</b> showing the user what the assistant currently knows about them and their company, so a wrong answer traces back to a specific, checkable input</li>
+              <li><b>Structured input scaffolds:</b> something to answer into instead of an empty field. The product is a sequence, and an answer that wanders off its step produces output built on the wrong inputs</li>
+              <li><b>Transparency messaging for hallucination mitigation:</b> saying plainly, at the moment output is generated, where it came from and that it should be checked before anyone acts on it</li>
+            </ul>
+          </div>
+        
+          <figure class="case-illo">
+              <img src="img/codefi-ai-patterns-trusting-wrong.png"
+                 alt="An analyst nodding along to a panel, not noticing that one marked row on it is wrong."
+                 width="1024" height="768" loading="lazy" decoding="async">
+              <figcaption class="cap">Someone reading AI output and pointing at the part that looks right.</figcaption>
+            </figure>
+        </div>
+
+        <figure class="case-shot" data-reveal>
+          <img class="case-shot-img" src="img/codefi-product-ai-patterns-overview.png" alt="The three patterns in the product: contextual awareness indicators, structured input scaffolds, and transparency messaging." loading="lazy" decoding="async">
+          <figcaption class="cap">The three patterns in the product: contextual awareness indicators, structured input scaffolds, and transparency messaging.</figcaption>
+        </figure>
+
+      </section>
+
+      <!-- ================= CHAPTER 04 · craft =================
+           PLACEHOLDER, requested explicitly: the general design work across
+           Traction Studio AI beyond the early prototype, updated nav,
+           updated patterns, the unglamorous fleshing-out work that doesn't
+           reduce to one flagship decision. Needs real before/after
+           screenshots before this is publish-ready. -->
+      <section class="chap" id="craft">
+
+        <div class="chap-head" data-reveal>
+          <span class="chap-kicker"><span class="idx">04</span> Traction Studio AI · Product design · In progress</span>
+          <h2>Beyond the prototype</h2>
+          <p class="dek">Every module started as a light, functional prototype. Turning that into a shippable product was its own body of work, spread across the whole surface rather than concentrated in one decision.</p>
+          <div class="case-facts">
+            <div><span class="k">Surface</span><span class="v">Traction Studio AI, across every module</span></div>
+            <div><span class="k">Role</span><span class="v">Sole designer</span></div>
+            <div><span class="k">Scope</span><span class="v">Navigation, layout, and interaction patterns</span></div>
+            <div><span class="k">Status</span><span class="v">In progress</span></div>
+          </div>
+        </div>
+
+        <div class="beat beat--illo" data-reveal>
+          <h3>The rest of the surface</h3>
+          <div class="split">
+            <p>The rest of a 0→1 product is ordinary by comparison, and it is most of the surface. <b>Navigation was the biggest of it:</b> targets too small to hit reliably, hover states that behaved differently depending on where you were, and a layout that did not survive a phone. The fix was less a better idea than one consistent idea applied everywhere, so finding a tool stopped depending on having found it once already.</p>
+            <p>Then layouts from placeholder to real content, and patterns applied across the surface that had only ever existed on one screen. <b>None of it reduces to a decision worth its own chapter</b>, which is why it is here: it is the volume of work between a working prototype and something you can hand a founder.</p>
+          </div>
+        
+          <figure class="case-illo">
+              <img src="img/codefi-craft-many-screens.png"
+                 alt="A first-time user surrounded by many small unfamiliar screens, meeting all of them at once."
+                 width="1024" height="768" loading="lazy" decoding="async">
+              <figcaption class="cap">A new user meeting the whole product at once, most of it ordinary screens.</figcaption>
+            </figure>
+        </div>
+
+        <figure class="case-shot" data-reveal>
+          <img class="case-shot-img" src="img/codefi-product-craft-before-after.png" alt="Prototype-stage screens next to their shipped versions, across navigation and core layouts." loading="lazy" decoding="async">
+          <figcaption class="cap">Prototype-stage screens next to their shipped versions, across navigation and core layouts.</figcaption>
+        </figure>
+
+      </section>
+
+      <!-- Paired-page CTA. The other half of this job, per the 4-page split. -->
+      <a class="pager" href="codefi-growth.html" data-reveal>
+        <div>
+          <span class="lbl">The other half of this job</span>
+          <h3>Codefi: the growth strategy I wrote, and the paid motion I ran</h3>
+        </div>
+        <span class="arw">→</span>
+      </a>
+
+      <a class="pager" href="codefi-tooling.html" data-reveal>
+        <div>
+          <span class="lbl">The tooling behind both</span>
+          <h3>Codefi: product, growth, then the tooling to do both faster</h3>
+        </div>
+        <span class="arw">→</span>
+      </a>
+
+      <a class="pager" href="congenius-product.html" data-reveal>
+        <div>
+          <span class="lbl">Next case study</span>
+          <h3>ConGenius: three years as the only designer</h3>
+        </div>
+        <span class="arw">→</span>
+      </a>
+
+    </div>
+  </div>
+
+  <footer class="foot">
+    <span>Springfield, MO</span>
+    <div class="links">
+      <a href="mailto:shantanukashyapsmhs@gmail.com">shantanukashyapsmhs@gmail.com</a>
+      <a href="https://www.linkedin.com/in/shantanu-kashyap/">LinkedIn ↗</a>
+      <a href="https://github.com/sketches-to-scale">GitHub ↗</a>
+      <a href="index.html">All work</a>
+    </div>
+  </footer>
+
+</div>
+</main>
+
+<script src="motion.js" defer></script>
+</body>
+</html>

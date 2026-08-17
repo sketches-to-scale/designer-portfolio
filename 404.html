@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" href="img/favicon.png">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Page not found — Shantanu Kashyap</title>
+<meta name="description" content="This page doesn't exist. The case studies do — here's the way back.">
+<meta property="og:title" content="Page not found — Shantanu Kashyap">
+<meta property="og:description" content="This page doesn't exist. The case studies do — here's the way back.">
+<meta property="og:type" content="website">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  /* Same root violet as Home — this page isn't part of any one case
+     study, so it takes the site's default accent rather than borrowing
+     a case-study hue that would misleadingly suggest it belongs to one. */
+  :root { --accent: #563174; --accent-soft: #F0ECF3; }
+
+  .nf-code {
+    font-family: "Raleway", sans-serif; font-weight: 700;
+    font-size: clamp(3.5rem, 9vw, 5.5rem); line-height: 1;
+    letter-spacing: -0.03em; color: var(--line-2);
+    -webkit-text-stroke: 1.5px var(--accent);
+    color: transparent;
+  }
+
+  /* Full-height hero so the footer lands right at the bottom of the first
+     screen instead of stranded in a gap of dead space below a short block
+     of content. --nav-h is measured live by motion.js; 68px is just the
+     pre-JS fallback. */
+  .hero { min-height: calc(80vh - var(--nav-h, 68px)); display: flex; align-items: center; padding-top: 40px; padding-bottom: 40px; }
+  @media (max-width: 700px) { .hero { min-height: 0; padding-top: 56px; padding-bottom: 56px; } }
+
+  /* No card this time: image sits directly on the page canvas. Its own
+     background is plain white, same as --canvas, so dropping the border/
+     shadow/padding is enough to read as "no box" without needing a
+     transparent asset. */
+  .nf-illo { max-width: 460px; margin: 0 auto; }
+  .nf-illo img { width: 100%; height: auto; display: block; }
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<nav class="nav">
+  <div class="wrap">
+    <a class="mark" href="index.html">
+      <span class="glyph">SK</span>
+      <span class="mark-name">Shantanu Kashyap</span>
+    </a>
+    <div class="navlinks">
+      <a href="index.html">Work</a>
+      <a href="about.html">About</a>
+      <a href="https://drive.google.com/file/d/1TjVQ_KrvfItAI4MKjaeZ77ZZIEZ_f_Ml/view?usp=sharing" target="_blank" rel="noopener">Resume</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main" tabindex="-1">
+<div class="wrap">
+
+  <section class="hero">
+    <div class="g12">
+      <div class="hero-copy">
+        <span class="nf-code" data-reveal style="--i:0" aria-hidden="true">404</span>
+        <span class="kicker" data-reveal style="--i:1; margin-top:14px;">
+          <span class="chip-word fig-pop" style="--i:0">404</span>
+          <span class="chip-word fig-pop" style="--i:1">Wrong turn</span>
+        </span>
+        <h1 data-reveal style="--i:2">
+          This page doesn't exist. <span class="mk mk--load">The work does.</span>
+        </h1>
+        <p class="sub" data-reveal style="--i:3">
+          You hit a broken or outdated link. Here's the way back to the case studies.
+        </p>
+        <div class="cta-row" data-reveal style="--i:4">
+          <a class="btn" href="index.html">See the work <span class="arw">→</span></a>
+          <a class="btn btn-ghost" href="about.html">About me</a>
+        </div>
+      </div>
+
+      <!-- Custom illustration (storyllustration, gen_e416f63398c045339b01),
+           built on the same violet/orange restrained palette as the site's
+           other case-study illustrations. Deliberately NOT in the .figure
+           card other pages use for screenshots/diagrams, just the image
+           sitting directly on the page canvas. -->
+      <div class="hero-vis nf-illo" data-reveal style="--i:2">
+        <img src="img/404-dead-end.png" alt="Illustration of a car stopped hard at a striped barrier where the road ends, with a signpost reading Projects pointing back the way it came.">
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span>Springfield, MO</span>
+    <div class="links">
+      <a href="mailto:shantanukashyapsmhs@gmail.com">shantanukashyapsmhs@gmail.com</a>
+      <a href="https://www.linkedin.com/in/shantanu-kashyap/">LinkedIn ↗</a>
+      <a href="https://github.com/sketches-to-scale">GitHub ↗</a>
+      <a href="about.html">About</a>
+    </div>
+  </footer>
+
+</div>
+</main>
+
+<script src="motion.js" defer></script>
+</body>
+</html>

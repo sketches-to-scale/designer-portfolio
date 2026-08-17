@@ -1,0 +1,2250 @@
+/* ============================================================
+   Shantanu Kashyap, portfolio
+   Direction: "Receipts". A working surface that shows its evidence.
+
+   Palette: carried over from the live site (white + shades of purple),
+   but rebuilt as a proper single-hue system with a full value range
+   instead of a base color plus a highlight. One hue, many values, is a
+   more confident system than many hues, and it means the per-case-study
+   wayfinding colors are all still purple, so nothing fights.
+
+   Type: Raleway (display/UI AND the metadata/label tier) / Lato (long prose).
+   TWO families, decided 2026-08-13. This was three: Acumin Pro carried
+   metadata, status, numbers, anything that wasn't a heading or body copy,
+   across 21 declarations, more than either of the other two. It was never
+   loaded. Acumin Pro is Adobe-exclusive, there was no Typekit embed, and the
+   fallback chain resolved to Futura on macOS, Century Gothic on Windows with
+   Office, and generic sans elsewhere, so the label tier rendered as three
+   different typefaces depending on the reader. Collapsed onto Raleway, which
+   was already loaded and is already the display/UI face. Acumin Pro
+   requires an Adobe Fonts kit embed, see the <head> of each page, falls
+   back to Century Gothic/Futura until one is added.
+
+   Personality lives in motion + layout irregularity, not ornament.
+   ============================================================ */
+
+/* ---------- cross-document page transitions (the Framer-smoothness lever) ---------- */
+@view-transition { navigation: auto; }
+
+::view-transition-old(root) { animation: vt-out 200ms cubic-bezier(0.4,0,1,1) both; }
+::view-transition-new(root) { animation: vt-in 380ms cubic-bezier(0.22,1,0.36,1) both; }
+@keyframes vt-out { to { opacity: 0; transform: translateY(-8px); } }
+@keyframes vt-in { from { opacity: 0; transform: translateY(14px); } }
+
+:root {
+  /* --- surface --- */
+  --canvas:    #FCFBFE;   /* white, faintest violet cast */
+  --surface:   #FFFFFF;
+  --surface-2: #F7F4FE;   /* lilac wash */
+  --night:     #4D3C6E;   /* mid violet band, lightened per direct request; text pairs below re-tuned to hold AA at this lighter value */
+  --night-2:   #2A1B4D;
+
+  /* --- ink (purple-cast neutrals, not gray) --- */
+  --ink:        #17131F;
+  --ink-2:      #5A5368;  /* 7.1:1 on canvas. Body sub. */
+  --ink-3:      #77708A;  /* 4.6:1 on canvas. Metadata only. */
+  --on-night:   #F3EFFB;  /* 8.5:1 on night */
+  --on-night-2: #C3B9DC;  /* 5.2:1 on night */
+
+  --line:       #E9E4F5;
+  --line-2:     #D8D0EC;
+  --line-night: rgba(255, 255, 255, 0.18);
+
+  /* --- the purple range: structure, wayfinding, anything text-level ---
+     2026-08-08: rebased darker/more muted per direct request (was #6A3FE0).
+     Re-verified: 9.76:1 on canvas (up from 6.0:1 — darker plum reads even
+     more comfortably as text than the brighter blue-violet did). */
+  --violet:      #563174;  /* primary. 9.76:1 on canvas. */
+  --violet-deep: #341B48;
+  --violet-lift: #8A5AB1;
+  --violet-pale: #B89CCF;  /* lighter offset spot color, e.g. icon backdrops */
+  --violet-soft: #F0ECF3;
+
+  /* --- orange: highlight and accent only. Purple structures, orange points. --- */
+  --orange:      #FF6B2C;  /* fill/marker. Ink on top = 6.4:1 */
+  --orange-lift: #FFA36B;  /* on the dark band. 4.9:1 */
+  --orange-deep: #B84007;  /* the only orange allowed as text. 5.4:1 on canvas, 4.8:1 on orange-soft. */
+  --orange-soft: #FFE9DC;
+
+  --marker:      rgba(255, 107, 44, .4);  /* highlighter swipe, 40% of --orange. Never a text color.
+    Own variable rather than reusing --orange at full strength so this can be dialed without
+    touching CTAs/buttons/counters, which still want the full-strength color. */
+
+  /* --- per-page accent (overridden in <head>; always a purple) --- */
+  --accent:      #563174;
+  --accent-soft: #F0ECF3;
+
+  /* --- motion --- */
+  --e-out:    cubic-bezier(0.22, 1, 0.36, 1);
+  --e-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --e-io:     cubic-bezier(0.65, 0, 0.35, 1);
+  --d1: 160ms; --d2: 300ms; --d3: 560ms; --d4: 820ms;
+
+  /* --- rhythm --- */
+  --gut: 20px;
+  --max: 1160px;
+  --read: 760px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* overflow-x: hidden lives on html only, not body. The 100vw-bleed
+   elements (.rail, .intro-band, .nav) need something to clip their
+   horizontal overflow, but the same rule on body turns body into its
+   own scroll container, which is what broke the sticky rail: sticky
+   descendants dock relative to their nearest scrolling ancestor, and
+   with two nested overflow-x:hidden boxes that stopped being the real
+   viewport. html's clip alone is enough. */
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; overflow-x: hidden; }
+
+body {
+  font-family: "Lato", -apple-system, "Segoe UI", Arial, sans-serif;
+  background: var(--canvas);
+  color: var(--ink);
+  font-size: 1.2rem;
+  line-height: 1.6;
+  font-feature-settings: "cv05" 1, "cv11" 1, "ss01" 1;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  text-wrap: pretty;
+}
+h1, h2, h3 { text-wrap: balance; }
+
+/* Horizontal-scroll wrapper for wide diagrams. Below ~620px an SVG built
+   for desktop shrinks its labels into illegibility, so the figure scrolls
+   instead of scaling. */
+.fig-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
+
+h1, h2, h3, h4, .display {
+  font-family: "Raleway", sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+}
+
+.mono, .meta, .status, .idx, .stat-n {
+  font-family: "Raleway", sans-serif;
+}
+
+a { color: inherit; }
+
+/* ============================================================
+   SMALL-CAPS LABEL WEIGHT
+   Raleway at 400, uppercased and tracked out at 12-13px, renders thin
+   enough that these labels read as disabled rather than secondary.
+   Twelve of the fourteen label rules had no font-weight at all, so they
+   were falling to 400 by omission. The two that WERE set deliberately,
+   .sec-label and .tile .t-name, are both 500 — so 500 was already this
+   system's intended value and the rest simply never received it.
+   Set explicitly on all of them rather than bumping the two that were
+   noticed, which would have left a visibly mixed label system.
+   ============================================================ */
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.wrap  { max-width: var(--max); margin: 0 auto; padding: 0 32px; }
+.read  { max-width: var(--read); }
+
+.g12 { display: grid; grid-template-columns: repeat(12, 1fr); gap: var(--gut); }
+
+section { position: relative; }
+
+/* ============================================================
+   MOTION PRIMITIVES
+   ============================================================ */
+
+/* Reveal: the base scroll-in. Stagger via --i on the element. */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity var(--d3) var(--e-out),
+    transform var(--d3) var(--e-out);
+  transition-delay: calc(var(--i, 0) * 55ms);
+  will-change: opacity, transform;
+}
+[data-reveal].is-in { opacity: 1; transform: none; will-change: auto; }
+
+/* Line-clip reveal, hero headline only. */
+.line-mask { display: block; overflow: hidden; }
+.line-mask > span {
+  display: block;
+  transform: translateY(105%);
+  transition: transform var(--d4) var(--e-out);
+  transition-delay: calc(var(--i, 0) * 80ms);
+}
+.is-loaded .line-mask > span { transform: none; }
+
+/* Marker swipe: the signature move. Highlighter wipes in behind key text. */
+.mk {
+  background-image: linear-gradient(var(--marker), var(--marker));
+  background-repeat: no-repeat;
+  background-position: 0 0.86em;
+  background-size: 0% 0.34em;
+  transition: background-size var(--d4) var(--e-out);
+  transition-delay: 260ms;
+  padding: 0 0.06em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+.mk.is-in, .is-loaded .mk--load { background-size: 100% 0.34em; }
+
+.stat-n { font-variant-numeric: tabular-nums; }
+
+/* Scroll progress rail, case-study pages */
+.progress {
+  position: fixed; top: 0; left: 0; right: 0; height: 3px;
+  z-index: 90; transform-origin: 0 50%; transform: scaleX(0);
+  background: linear-gradient(90deg, var(--violet), var(--orange));
+  transition: transform 90ms linear;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  @view-transition { navigation: none; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+  }
+  [data-reveal] { opacity: 1 !important; transform: none !important; }
+  .line-mask > span { transform: none !important; }
+  .mk { background-size: 100% 0.34em !important; }
+  .status--live::before { animation: none !important; }
+  .fig-pop { opacity: 1 !important; transform: none !important; }
+  .fig-draw { stroke-dashoffset: 0 !important; }
+  .scene-settle { opacity: 1 !important; transform: none !important; }
+  .scene { transform: none !important; }
+}
+
+/* ============================================================
+   NAV
+   ============================================================ */
+.nav {
+  position: sticky; top: 0; z-index: 80;
+  background: rgba(252, 251, 254, .82); /* fallback */
+  background: color-mix(in srgb, var(--canvas) 80%, transparent);
+  backdrop-filter: saturate(1.7) blur(14px);
+  -webkit-backdrop-filter: saturate(1.7) blur(14px);
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--d2) var(--e-out);
+}
+/* Nav keeps its hairline: it's a chrome/content boundary, not a divider
+   inside the reading column. */
+.nav.is-stuck { border-bottom-color: var(--line); }
+.nav .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-top: 15px; padding-bottom: 15px; flex-wrap: wrap; row-gap: 10px; }
+
+.mark {
+  display: inline-flex; align-items: center; gap: 10px;
+  text-decoration: none; font-weight: 600; font-size: 1.0875rem; letter-spacing: -0.015em;
+  view-transition-name: sk-mark;
+}
+.mark .glyph {
+  width: 28px; height: 28px; border-radius: 9px;
+  display: grid; place-items: center;
+  background: var(--accent); color: #fff;
+  font-family: "Raleway", sans-serif; font-size: 0.825rem; font-weight: 500;
+  transition: transform var(--d2) var(--e-spring), background var(--d2) var(--e-out);
+}
+.mark:hover .glyph { transform: rotate(-8deg) scale(1.06); background: var(--ink); }
+
+.navlinks { display: flex; align-items: center; gap: 2px; }
+.navlinks a {
+  position: relative; font-size: 0.975rem; text-decoration: none; color: var(--ink-2);
+  padding: 7px 13px; border-radius: 8px;
+  transition: color var(--d1) var(--e-out);
+}
+.navlinks a::after {
+  content: ""; position: absolute; left: 13px; right: 13px; bottom: 3px; height: 2px;
+  background: var(--accent); border-radius: 2px;
+  transform: scaleX(0); transform-origin: 0 50%;
+  transition: transform var(--d2) var(--e-out);
+}
+.navlinks a:hover { color: var(--ink); }
+.navlinks a:hover::after { transform: scaleX(1); }
+.navlinks a.current { color: var(--ink); font-weight: 600; }
+.navlinks a.current::after { transform: scaleX(1); }
+
+/* ============================================================
+   SHARED TYPE BITS
+   ============================================================ */
+.kicker {
+  font-family: "Lato", -apple-system, "Segoe UI", Arial, sans-serif;
+  font-size: 1.05rem; font-weight: 400; letter-spacing: -0.005em; text-transform: none;
+  color: var(--ink-2); display: inline-flex; align-items: center;
+  flex-wrap: wrap; gap: 8px;
+}
+.kicker--accent { color: var(--accent); }
+
+/* Kicker chip-words: small pill bubbles, each pops in on load via the
+   existing fig-pop system (reused, not a new animation), staggered per
+   --i. Distinct from the old personality tag-pills (Session 11, removed
+   for being self-applied/unsubstantiated with a looping animation) —
+   these just carry real positioning keywords and fire once on load. */
+.chip-word {
+  display: inline-flex; align-items: center;
+  padding: 5px 14px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: 1px solid var(--violet-lift);
+  border-radius: 999px;
+  font-size: 0.92rem; font-weight: 600; letter-spacing: -0.005em;
+  line-height: 1.3;
+}
+
+.lede { font-size: 1.3125rem; line-height: 1.6; color: var(--ink-2); }
+.meta { font-size: 0.9rem; color: var(--ink-3); }
+
+/* ============================================================
+   HOME, HERO
+   ============================================================ */
+.hero { padding: 122px 0 120px; }
+.hero .g12 { align-items: center; } /* hero-copy runs taller than hero-vis; centering the visual against it kills the dead void that top-alignment left underneath the image */
+.hero-copy { grid-column: 1 / span 7; }
+.hero-vis  { grid-column: 8 / span 5; }
+
+.hero h1 {
+  font-size: clamp(1.7875rem, 4.84vw, 3.1625rem);
+  line-height: 1.1; letter-spacing: -0.03em; margin: 22px 0 0;
+}
+.hero .sub { margin-top: 24px; max-width: 500px; font-size: 1.2375rem; color: var(--ink-2); }
+/* Emphasis for one phrase in the sub-line: medium weight + the page's
+   own accent color, same size and roman (not italic) as the paragraph
+   around it. Uses --accent rather than a hardcoded hex so it stays
+   correct if a future page reuses this class with its own accent. On
+   Home, --accent is --violet, already verified at 9.76:1 on canvas. */
+.sub-emph { font-weight: 600; color: var(--accent); }
+
+.cta-row { display: flex; align-items: center; gap: 12px; margin-top: 34px; flex-wrap: wrap; }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 13px 22px; border-radius: 999px;
+  font-size: 1.05rem; font-weight: 600; text-decoration: none;
+  background: var(--ink); color: var(--canvas);
+  transition: transform var(--d2) var(--e-spring), box-shadow var(--d2) var(--e-out), background var(--d2) var(--e-out);
+  will-change: transform;
+}
+.btn .arw { transition: transform var(--d2) var(--e-spring); }
+.btn:hover { background: var(--night); box-shadow: 0 14px 32px -10px rgba(77,60,110,.5); }
+.btn:hover .arw { transform: translateX(4px); }
+
+.btn-ghost {
+  background: transparent; color: var(--ink); border: 1px solid var(--line-2);
+  transition: background var(--d2) var(--e-out), border-color var(--d2) var(--e-out), transform var(--d2) var(--e-spring);
+}
+.btn-ghost:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--ink); transform: translateY(-2px); box-shadow: none; }
+
+/* the animated handoff figure, the one showpiece. It draws the actual
+   problem (chat to structured product), so it earns its motion. */
+.figure {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: 18px; padding: 20px; position: relative; overflow: hidden;
+}
+.figure svg, .figure img { width: 100%; height: auto; display: block; position: relative; z-index: 1; }
+.figure .cap {
+  font-family: "Raleway", sans-serif; font-size: 0.7875rem; color: var(--ink-3);
+  margin-top: 14px; line-height: 1.55; position: relative; z-index: 1;
+}
+.figure::after {
+  content: ""; position: absolute; top: -22px; right: -22px; width: 130px; height: 130px;
+  pointer-events: none; z-index: 0; border-radius: 30px;
+  background: var(--accent-soft);
+}
+
+/* Hero scene: one single-generation illustration replacing the earlier
+   6-layer orbit (which read as disconnected clip-art, each piece had its
+   own perspective/ground plane with nothing tying them together) and the
+   app-screenshot artifact before that. The illustration's own solid purple
+   floor was removed in a manual pass (swapped for faint perspective lines),
+   so the organic blob backdrop no longer doubles up on purple the way it
+   did against the old floor-plane version, it can sit behind the now fully
+   transparent scene as the page's usual "layer of color" device. */
+.scene {
+  position: relative;
+  max-width: 520px; margin: 0 auto;
+}
+
+.scene-blob {
+  position: absolute; z-index: 0;
+  top: -2%; right: -10%;
+  width: 88%; height: 88%;
+  transform: rotate(-4deg);
+}
+
+.scene-shot {
+  position: relative; z-index: 1;
+  display: block; width: 100%; height: auto;
+  filter: drop-shadow(0 26px 44px rgba(42,27,77,.24));
+}
+
+/* Bigger settle-in for the hero illustration specifically, a more
+   pronounced spring bounce than the standard fig-pop used everywhere
+   else, since this is the page's one focal visual and earns a bigger
+   single moment. Still fires once on load, same "reveal not loop" rule
+   as the rest of the motion system. */
+.scene-settle {
+  opacity: 0;
+  transform: scale(.8) translateY(50px) rotate(-2.5deg);
+  transform-origin: 55% 100%;
+}
+.is-loaded .scene-settle {
+  animation: scene-settle-in 900ms cubic-bezier(.25,1.8,.4,1) forwards;
+  animation-delay: 380ms;
+}
+@keyframes scene-settle-in { to { opacity: 1; transform: none; } }
+
+/* Draw-on. The hero figure fires at load; anything further down the page
+   waits until it is actually revealed, so the moment is not spent off-screen. */
+.fig-draw { stroke-dasharray: var(--len, 400); stroke-dashoffset: var(--len, 400); }
+.is-loaded .hero .fig-draw { animation: draw 1050ms var(--e-out) 400ms forwards; }
+[data-reveal].is-in .fig-draw { animation: draw 1000ms var(--e-out) 160ms forwards; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+
+.fig-pop { opacity: 0; transform: scale(.88); transform-origin: center; }
+.is-loaded .hero .fig-pop { animation: pop 520ms var(--e-spring) forwards; animation-delay: calc(720ms + var(--i,0) * 85ms); }
+[data-reveal].is-in .fig-pop { animation: pop 520ms var(--e-spring) forwards; animation-delay: calc(300ms + var(--i,0) * 70ms); }
+@keyframes pop { to { opacity: 1; transform: none; } }
+
+/* ============================================================
+   SECTION, DARK VARIANT (Codefi band)
+   Hero stays original/white. This is the section directly below it,
+   reusing the exact same solid --night the Receipts .band already
+   uses further down the page, not a new color, so the two dark
+   moments on this page read as one system rather than two competing
+   ones. Wave SVGs mark the seam in and the seam out; real paths, not
+   clip-path arcs, so each can be asymmetric on its own.
+   ============================================================ */
+/* .sec.sec-dark, not .sec-dark alone: .sec's own 88px/64px padding rules
+   sit later in the cascade at equal specificity, so a bare .sec-dark
+   selector was silently losing that fight, the padding bump never took
+   effect on the rendered page even though the CSS was valid. */
+.sec.sec-dark { position: relative; z-index: 0; padding: 208px 0 224px; }
+.sec-dark::before {
+  content: "";
+  position: absolute; top: 0; bottom: 0; left: 50%; right: 50%;
+  width: 100vw; margin-left: -50vw;
+  background: var(--night);
+  z-index: -1;
+}
+/* Text overrides mirror .band's already-verified recipe exactly:
+   kicker/body → on-night-2, headings → on-night, links → orange-lift. */
+.sec-dark .sec-head .titles p { color: var(--on-night-2); }
+.sec-dark .sec-head h2 { color: var(--on-night); }
+.sec-dark .link-arrow { color: var(--on-night); }
+.sec-dark .link-arrow:hover { background: var(--canvas); border-color: var(--canvas); color: var(--ink); }
+
+.wave-edge {
+  position: absolute; left: 50%; width: 100vw; margin-left: -50vw;
+  height: 96px; z-index: 0; pointer-events: none;
+}
+.wave-edge path { fill: var(--canvas); }
+.wave-edge--top { top: -1px; }
+.wave-edge--bottom { bottom: -1px; }
+
+@media (max-width: 1000px) {
+  .sec.sec-dark { padding: 156px 0 168px; }
+  .wave-edge { height: 72px; }
+}
+@media (max-width: 700px) {
+  .sec.sec-dark { padding: 108px 0 120px; }
+  .wave-edge { height: 48px; }
+}
+
+/* ============================================================
+   COVER BANDS — full-bleed anchor targets inside a long-read case
+   study. Session 15: replaced the mini-page layer (8 standalone URLs)
+   with this. Every named beat that used to be its own page now opens
+   with a full-bleed band right here in the long read, so an anchor
+   jump from Home or the rail lands on a real visual break instead of
+   a spot mid-scroll indistinguishable from the paragraph above it.
+   Alternates two tints down the page (zebra), reusing --surface and
+   --surface-2, the same already-verified pair .sec-tint and
+   .case-body--lilac use elsewhere, so no new colors and no new
+   contrast risk. The rhythm runs continuously across act boundaries
+   (sec-label dividers still mark Act One / Act Two on top), not reset
+   per act, so it reads as one steady pulse down the page. */
+/* .zebra is the actual tint owner: it wraps a cover PLUS everything that
+   belongs to that beat (figures, notes, mini-grids) all the way up to
+   the next section, and bleeds the tint the full height of that content.
+   Session 15, second follow-up: the first version put the alternating
+   background on .cover alone, a ~250px box around just the kicker/h2/dek.
+   Everything below it (the actual beat copy) fell back to the ambient
+   .case-body--lilac wash, producing a lilac → white → lilac sandwich in
+   under 500px of scroll, three hard-edged bands instead of one. Confirmed
+   from a render, not caught by any structural check, same lesson as
+   Session 11. Small vertical padding on .zebra (not just its children)
+   stops a child's margin from collapsing through the wrapper's own box
+   and leaking the ambient background through at the seam. */
+.zebra { position: relative; z-index: 0; padding: 1px 0; scroll-margin-top: var(--nav-h, 68px); }
+.zebra::before {
+  content: "";
+  position: absolute; top: 0; bottom: 0; left: 50%; right: 50%;
+  width: 100vw; margin-left: -50vw;
+  z-index: -1;
+}
+/* --a = lilac, --b = white (swapped from the initial pass): every long-read
+   opens with .zebra--a on its first section (id="problem"/"start"), which
+   sits directly under the white nav + rail. White-into-white there read as
+   no break at all, so the rhythm now opens on the tint and alternates from
+   there, same alternation, just starting on the other foot. */
+.zebra--a::before { background: var(--surface-2); }
+.zebra--b::before { background: var(--surface); }
+
+/* .cover is now typography/layout only, no background of its own, the
+   parent .zebra owns that. */
+.cover { padding: 76px 0 6px; }
+.cover-head { max-width: var(--read); }
+
+/* .zebra--dark: the "book cover" treatment for a Context section, the
+   material that opens an act but isn't itself a numbered chapter. Reuses
+   the exact --night/on-night recipe already verified for the page's own
+   hero and the Receipts band, so this reads as "front matter," visually
+   distinct from every numbered chapter that follows, the same way a real
+   book's cover looks nothing like its interior pages. Scoped narrowly:
+   only #problem/#start use this for now, not the numbered chapters. */
+.zebra--dark::before { background: var(--night); }
+.zebra--dark .cover-kicker { color: var(--on-night-2); }
+.zebra--dark .cover .kicker,
+.zebra--dark .cover .kicker--accent { color: var(--on-night-2); }
+.zebra--dark .cover-head h2 { color: var(--on-night); }
+/* .cover .dek (below) sets color at the same 2-class specificity and comes
+   later in source order, so it was winning this tie and leaving the dek
+   near-invisible on the dark background. Match its selector shape one
+   level deeper (.zebra--dark .cover .dek) to reliably outrank it regardless
+   of where either rule sits in the file. */
+.zebra--dark .cover .dek { color: var(--on-night-2); }
+.zebra--dark .case-facts .k { color: var(--on-night-2); }
+.zebra--dark .case-facts .v { color: var(--on-night); }
+.cover-kicker {
+  display: inline-flex; align-items: center; gap: 9px;
+  font-family: "Raleway", sans-serif; font-weight: 500;
+  font-size: 0.8125rem; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--accent);
+}
+.cover-kicker .idx { color: var(--ink-3); }
+.cover h2 {
+  font-size: clamp(1.6rem, 3.1vw, 2.3rem);
+  margin: 13px 0 11px; letter-spacing: -0.02em; max-width: 680px;
+}
+.cover .dek { font-size: 1.1625rem; color: var(--ink-2); max-width: 620px; }
+
+@media (max-width: 700px) {
+  .cover { padding: 50px 0 4px; }
+  .cover .dek { font-size: 1.0625rem; }
+}
+
+/* Full-height variant: reserved for sections that used to be their own
+   standalone page (the real decisions), not every anchor. Session 15
+   follow-up, after Shantanu flagged the plain .cover as too thin to
+   read as a chapter break — confirmed scope explicitly: full 100vh only
+   on the 5 (Codefi) / 3 (ConGenius) sections with real substance behind
+   them, the connective/context beats keep the compact .cover so a
+   10-section long-read doesn't double in scroll length on padding
+   alone. Reuses .case-facts inside the head, same component the page's
+   own hero already uses, so each of these reads like the case-cover
+   its old standalone page used to have. */
+.cover--full {
+  min-height: 100vh; min-height: 100svh;
+  display: flex; align-items: center;
+  padding: 120px 0;
+}
+.cover--full .cover-head { max-width: 780px; }
+.cover--full .cover-kicker { font-size: 0.9rem; }
+.cover--full h2 { font-size: clamp(2.15rem, 4.6vw, 3.35rem); margin: 20px 0 18px; max-width: 740px; }
+.cover--full .dek { font-size: 1.325rem; max-width: 640px; }
+.cover--full .case-facts { margin-top: 46px; max-width: 640px; }
+
+@media (max-width: 1000px) {
+  .cover--full { min-height: 0; padding: 84px 0; }
+}
+@media (max-width: 700px) {
+  .cover--full { padding: 64px 0; }
+  .cover--full h2 { font-size: clamp(1.7rem, 6.4vw, 2.3rem); }
+  .cover--full .dek { font-size: 1.1rem; }
+  .cover--full .case-facts { margin-top: 34px; gap: 18px 26px; }
+}
+
+/* ============================================================
+   SECTION HEADS
+   ============================================================ */
+.sec { padding: 88px 0; }
+
+/* zebra striping: full-bleed flat tint behind alternating sections, so the
+   page reads in distinct panels without a hard rule or a card border.
+   The box-shadow-spread full-bleed trick was tried first and reverted:
+   its spread pushes in every direction, not just horizontally, so with
+   nothing clipping it vertically it washed straight over the hero above.
+   This ::before approach bleeds only left/right (classic 50vw technique)
+   and is pinned top/bottom to this section's own box, so it can't leak
+   into its neighbors. */
+.sec-tint { position: relative; z-index: 0; }
+.sec-tint::before {
+  content: "";
+  position: absolute; top: 0; bottom: 0; left: 50%; right: 50%;
+  width: 100vw; margin-left: -50vw;
+  background: var(--surface-2);
+  z-index: -1;
+}
+.sec-head {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 22px; flex-wrap: wrap; padding-bottom: 0;
+  margin-bottom: 52px;
+}
+.sec-head .titles { max-width: none; display: flex; flex-direction: column; gap: 10px; }
+.sec-head h2 { font-size: clamp(1.8rem, 3.12vw, 2.4rem); }
+.sec-head .titles p { font-size: 1.0875rem; color: var(--ink-2); }
+
+.chip {
+  align-self: flex-start;
+  font-family: "Raleway", sans-serif; font-weight: 500;
+  font-size: 0.7875rem; letter-spacing: 0.03em; text-transform: uppercase;
+  padding: 5px 11px; border-radius: 999px;
+  background: var(--accent-soft); color: var(--accent);
+}
+.chip--hot { background: var(--orange-soft); color: var(--orange-deep); }
+
+.link-arrow {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 1.0125rem; font-weight: 600; text-decoration: none; color: var(--accent);
+  padding: 10px 18px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap;
+  transition: background var(--d2) var(--e-out), color var(--d2) var(--e-out), transform var(--d2) var(--e-spring);
+}
+.link-arrow .arw { transition: transform var(--d2) var(--e-spring); }
+.link-arrow:hover { background: var(--night); border-color: var(--night); color: #fff; transform: translateY(-2px); }
+.link-arrow:hover .arw { transform: translateX(4px); }
+
+/* ============================================================
+   BENTO TILES. Was deliberately irregular (wide/half spans); moved to a
+   uniform grid so real screenshots, used uncropped, get an even,
+   predictable width instead of stretching differently per tile. Default
+   is 3-up (ConGenius, 3 tiles); Codefi's 6 tiles use --2up instead, 2
+   per row / 3 rows, since a full uncropped app screenshot reads better
+   wider than a 3-up column allows.
+   ============================================================ */
+.bento { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; }
+
+.bento--2up .tile { grid-column: span 3; }
+
+.tile {
+  grid-column: span 2;
+  position: relative; overflow: hidden; min-width: 0;
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: 16px; padding: 22px 22px 20px;
+  display: flex; flex-direction: column; gap: 4px;
+  text-decoration: none; color: var(--ink);
+  transition: transform var(--d2) var(--e-out), box-shadow var(--d2) var(--e-out), border-color var(--d2) var(--e-out);
+  will-change: transform;
+}
+
+/* Interaction language: purple = structure & state. Hover reads through the
+   whole card, lift + a purple-tinted border + the icon chip deepening,
+   rather than a single accent bar across the top (too close to a
+   default-template tell). */
+.tile:hover, .tile:focus-visible {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 26px -20px rgba(42,27,77,.28);
+  border-color: color-mix(in srgb, var(--accent) 40%, white);
+}
+
+.tile .t-icon { margin-bottom: 8px; }
+.tile .t-icon svg { display: block; }
+.tile .t-icon .ic-fill { transition: fill-opacity var(--d3) var(--e-out); }
+.tile:hover .t-icon .ic-fill { fill-opacity: .32; }
+
+/* Real screenshot in place of the icon glyph. Framed, not bled, since the
+   product's own UI is dark and the tile surface is white, a bleed edge
+   would show a hard seam instead of dissolving into the card. The offset
+   shape behind it is the same "layer of color" device used for the hero
+   and diagrams elsewhere on the site, sized off width only so it holds
+   its own shape regardless of the image's aspect ratio. */
+.tile .t-shot {
+  position: relative; display: block; margin-bottom: 14px;
+}
+.tile .t-shot::before {
+  content: ""; position: absolute; z-index: 0;
+  top: 10px; left: 14px; width: 92%; height: 92%;
+  background: var(--accent-soft); border: 1px solid var(--violet-lift);
+  border-radius: 10px; transform: rotate(-2.5deg);
+}
+.tile .t-shot img {
+  position: relative; z-index: 1; display: block; width: 100%; height: auto;
+  border-radius: 10px; border: 1px solid var(--line);
+  box-shadow: 0 14px 24px -14px rgba(42,27,77,.35);
+}
+
+/* STATUS BADGE.
+   Was bare uppercase text preceded by a small solid dot. The dot was the
+   problem: on "Shipped" it is a status light that reports nothing, since
+   every one of these is a fixed label rather than a live reading, and a
+   decorative signal shaped like a real one is the specific thing that
+   reads as machine-generated rather than designed.
+
+   The dot is therefore retained on .status--live ONLY, where it pulses
+   and does mean something ongoing. That asymmetry is the point: a dot on
+   this site now indicates live state, and its absence indicates a settled
+   one. Do not add ::before back to the base class. */
+/* Neutral, not accent. In .tile-foot the badge sits on the same line as
+   "Read more", which is the card's actual action and is accent-coloured.
+   Two accent elements on one row compete, and only one of them is worth
+   clicking. A status label is orientation, not a call to action, so it
+   takes the ink ramp and lets the link keep the colour.
+
+   These neutrals are the site's purple-cast ink ramp rather than true
+   grey (see the :root comment). True grey would be a hue the palette
+   does not otherwise contain, which reads as imported.
+
+   --ink-2, not --ink-3, on measurement: --ink-3 on --surface-2 is
+   4.32:1, under AA for 11px text, and --ink-3 is marked metadata-only
+   for exactly this reason. --ink-2 on --surface-2 is 6.73:1. */
+.status {
+  font-size: 0.6875rem; font-weight: 600;
+  letter-spacing: 0.07em; text-transform: uppercase;
+  color: var(--ink-2);
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  background: var(--surface-2);
+  white-space: nowrap;
+}
+/* The live dot keeps the accent while its label goes neutral. It is the
+   one genuinely live signal in the component, so it is the one thing
+   that has earned the attention colour. currentColor would now resolve
+   to --ink-2 and lose that, hence the explicit var. */
+.status--live::before {
+  content: ""; width: 5px; height: 5px; border-radius: 50%;
+  background: var(--accent);
+  animation: blip 2.4s var(--e-io) infinite;
+}
+@keyframes blip { 0%,100% { opacity:1; transform: scale(1);} 50% { opacity:.3; transform: scale(.75);} }
+
+/* TILE FOOT: "Read more" and the badge on one baseline at the card's
+   bottom edge. The badge used to sit high in the column between the
+   thumbnail and the headline, where it interrupted the read before the
+   card had said anything.
+
+   A flex row rather than absolute positioning, so the two align by
+   layout instead of by hand-tuned offsets that would need re-checking
+   against every tile width. margin-top:auto moves here from .go, which
+   is what pins the row to the bottom of the flex column. */
+.tile-foot {
+  margin-top: auto; padding-top: 14px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.tile-foot .go { margin-top: 0; padding-top: 0; }
+
+.tile .stat {
+  font-family: "Raleway", sans-serif;
+  font-size: 1.5rem; font-weight: 600; letter-spacing: -0.025em; line-height: 1.22;
+  margin: 9px 0 3px;
+}
+.tile .t-name {
+  font-family: "Raleway", sans-serif; font-weight: 500;
+  font-size: 0.825rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-3);
+  line-height: 1.4;
+}
+.tile p { font-size: 1.0125rem; color: var(--ink-2); margin-top: 6px; }
+.tile .go {
+  margin-top: auto; padding-top: 14px;
+  font-family: "Raleway", sans-serif; font-weight: 600; font-size: 1.0625rem; color: var(--accent);
+  display: inline-flex; align-items: center; gap: 7px;
+}
+.tile .go .arw { transition: transform var(--d2) var(--e-spring); }
+.tile:hover .go .arw { transform: translateX(4px); }
+
+/* ============================================================
+   INVERTED OUTCOMES BAND, the one dark moment. Numbers get the stage.
+   ============================================================ */
+.band {
+  background: var(--night); color: var(--on-night);
+  border-radius: 24px; padding: 92px 40px; margin: 44px 0 52px;
+  position: relative;
+}
+.band .kicker { color: var(--on-night-2); }
+.band h2 { color: var(--on-night); font-size: clamp(1.65rem, 2.88vw, 2.1rem); margin: 14px 0 30px; max-width: 640px; }
+
+/* ---- independent proof card ------------------------------------------
+   Home's smallest content unit on purpose. This work is real and its
+   number is the strongest on the site, but at band scale it reads as a
+   side business rather than as range, so it gets a quiet tinted card and
+   a single figure instead of the dark full-bleed treatment. Sized to sit
+   below the two case-study sections, not to compete with them. */
+.sec--tight { padding: 40px 0 72px; }
+.proof {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 44px; flex-wrap: wrap;
+  background: var(--surface-2); border-radius: 18px; padding: 30px 34px;
+}
+.proof-body { max-width: 520px; }
+.proof-body h2 { font-size: 1.3125rem; letter-spacing: -0.015em; margin: 8px 0 8px; }
+.proof-body p { font-size: 1rem; color: var(--ink-2); line-height: 1.6; }
+.proof-stat { flex: none; }
+.proof-n {
+  font-family: "Raleway", sans-serif; font-weight: 600;
+  font-size: 2.125rem; letter-spacing: -0.03em; line-height: 1; color: var(--accent);
+}
+.proof-l { font-size: 0.975rem; color: var(--ink-2); margin-top: 7px; }
+.proof-src {
+  display: block; margin-top: 7px;
+  font-family: "Raleway", sans-serif; font-size: 0.8125rem; color: var(--ink-3);
+}
+.closing { margin-top: 30px; font-size: 1.0875rem; color: var(--ink-2); }
+.closing a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color var(--d2) var(--e-out); }
+.closing a:hover { border-bottom-color: var(--accent); }
+
+.stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+.stat-item { padding-top: 0; }
+.stat-item .stat-n {
+  font-family: "Raleway", sans-serif; font-weight: 600;
+  font-size: clamp(2.25rem, 4.32vw, 3.15rem); letter-spacing: -0.035em; line-height: 1;
+  color: var(--orange-lift);
+}
+.stat-item .stat-l { font-size: 0.975rem; color: var(--on-night-2); margin-top: 10px; line-height: 1.55; max-width: 270px; }
+.stat-item .stat-src {
+  font-family: "Raleway", sans-serif; font-size: 0.7875rem;
+  color: var(--on-night-2); margin-top: 9px; display: block;
+}
+.band-foot { margin-top: 30px; font-size: 0.975rem; color: var(--on-night-2); }
+.band-foot a { color: var(--orange-lift); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color var(--d2) var(--e-out); }
+.band-foot a:hover { border-bottom-color: var(--orange-lift); }
+
+/* ============================================================
+   CASE STUDY, long read
+   ============================================================ */
+
+/* Intro band: one quiet tint covering the hero + TL;DR + lede, ending
+   right where the rail sits. A single, purposeful background break
+   marking "this is the intro" vs. "this is the case study," not
+   alternating per-section tint (that read as boxing the narrative up).
+   Same full-bleed technique as .sec-tint on Home: pinned to this
+   element's own top/bottom, bled to the viewport edges left/right. */
+.intro-band { position: relative; z-index: 0; padding-bottom: 4px; }
+.intro-band::before {
+  content: "";
+  position: absolute; top: 0; bottom: 0; left: 50%; right: 50%;
+  width: 100vw; margin-left: -50vw;
+  background: var(--surface-2);
+  z-index: -1;
+}
+
+/* ============================================================
+   INTRO-BAND, DARK VARIANT
+   Same solid --night as Home's Codefi band and the Receipts band.
+   Covers the whole intro (hero, case-facts, TL;DR where present, and
+   the split lede), not just the hero, so there's no seam between
+   "Surface/Role/..." and the headline above it, they're one
+   continuous purple read. The wave sits at the very end of
+   .intro-band, after the lede, and hands off to plain white, where
+   .case-body actually starts. Combined selector throughout
+   (.intro-band.intro-band--dark, never a bare .intro-band--dark), so
+   this can't lose the same cascade fight .sec-dark lost earlier. */
+.intro-band.intro-band--dark { padding-bottom: 96px; }
+.intro-band.intro-band--dark::before { background: var(--night); }
+.intro-band.intro-band--dark .kicker,
+.intro-band.intro-band--dark .kicker--accent { color: var(--on-night-2); }
+.intro-band.intro-band--dark h1 { color: var(--on-night); }
+/* Divider lines dropped rather than recolored: on this dark band the
+   padding alone (already 22px/38px from the base rules) reads as enough
+   separation, a visible rule on top of it looked like clutter. */
+.intro-band.intro-band--dark .case-facts .k { color: var(--on-night-2); }
+.intro-band.intro-band--dark .case-facts .v { color: var(--on-night); }
+.intro-band.intro-band--dark .lede { color: var(--on-night-2); }
+
+.case-hero-wave {
+  position: absolute; left: 50%; bottom: -1px; width: 100vw; margin-left: -50vw;
+  height: 96px; z-index: 0; pointer-events: none;
+}
+.case-hero-wave path { fill: var(--canvas); }
+
+@media (max-width: 1000px) {
+  .intro-band.intro-band--dark { padding-bottom: 72px; }
+  .case-hero-wave { height: 72px; }
+}
+@media (max-width: 700px) {
+  .intro-band.intro-band--dark { padding-bottom: 48px; }
+  .case-hero-wave { height: 48px; }
+}
+
+/* ============================================================
+   INTRO-BAND, SPLIT VARIANT (two-zone layout)
+   Anchor case studies only (Codefi, ConGenius, the two pages with a
+   .rail). Requested change: purple should hold only the headline + hero
+   shots, not the whole intro. Case-facts/TL;DR/lede move out of
+   .intro-band entirely into a plain sibling (.intro-info, real white
+   canvas, no override needed since it's outside .intro-band--dark's
+   selector reach), then the rail, then .case-body picks up a lilac wash
+   via .case-body--lilac. Reads as: purple hero -> white facts -> [sticky
+   rail] -> lilac body, instead of one long purple band ending at the
+   rail. Added as a 3-class selector (beats the 2-class base rule on
+   specificity) so every other --dark page (mini-pages, Token Studio)
+   keeps the original single-band treatment untouched; this only fires
+   where --split is added alongside --dark. */
+.intro-band.intro-band--dark.intro-band--split { padding-bottom: 56px; }
+@media (max-width: 1000px) { .intro-band.intro-band--dark.intro-band--split { padding-bottom: 44px; } }
+@media (max-width: 700px) { .intro-band.intro-band--dark.intro-band--split { padding-bottom: 32px; } }
+
+/* The white zone between the purple hero and the rail. No background
+   rule needed, it's plain --canvas already, same as the page body. Just
+   enough top air so case-facts doesn't read as glued to the wave above
+   it (case-facts already carries its own 30px margin-top + bordered
+   22px padding-top for the header-adjacent case, this adds a little
+   more since it's now leading a whole new zone, not continuing one). */
+.intro-info { padding-top: 8px; }
+@media (max-width: 700px) { .intro-info { padding-top: 0; } }
+
+.case-hero { padding: 120px 0 52px; }
+.case-hero h1 { font-size: clamp(1.875rem, 5.04vw, 3.15rem); line-height: 1.12; max-width: 800px; margin: 20px 0 0; }
+
+/* Compact variant, for the short single-decision write-ups (the Codefi and
+   ConGenius mini-pages). Those have no hero-shot cluster, so the full-height
+   hero the anchor case studies use would strand most of a viewport of empty
+   space above a page that's only a few beats long. Opting out here rather
+   than at every call site keeps one hero component instead of two. */
+.case-hero--compact { padding: 108px 0 44px; }
+.case-hero--compact h1 { font-size: clamp(1.7rem, 4.2vw, 2.6rem); max-width: 960px; }
+
+/* .case-hero--compact only pairs with --split on Token Studio (the one
+   compact-hero page without a hero-shot cluster, so the wave sits right
+   after the headline with nothing else to buffer it). The base 44px bottom
+   pad was crowding the last line of text against the wave curve. Higher
+   specificity than both the base rule above and the ≥1001px desktop
+   override further down, so it wins at every width without touching the
+   8 mini-pages (compact, no split) or Codefi/ConGenius (split, not compact). */
+.intro-band--split .case-hero--compact { padding-bottom: 84px; }
+@media (max-width: 1000px) { .intro-band--split .case-hero--compact { padding-bottom: 64px; } }
+@media (max-width: 700px) { .intro-band--split .case-hero--compact { padding-bottom: 44px; } }
+
+/* Breadcrumb back to the parent case study. The mini-pages are reachable from
+   two places (Home tiles and the parent page's section), so the way back has
+   to be visible at the top, not only in the pager at the bottom. */
+.crumb {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: "Raleway", sans-serif;
+  font-size: 0.8625rem; letter-spacing: 0.02em;
+  color: var(--ink-3); text-decoration: none;
+  padding: 7px 14px 7px 12px; border-radius: 999px;
+  border: 1px solid var(--line-2); background: var(--surface);
+  transition: color var(--d2) var(--e-out), border-color var(--d2) var(--e-out);
+}
+.crumb-row { margin-bottom: 22px; }
+.crumb .arw { transition: transform var(--d2) var(--e-spring); }
+.crumb:hover { color: var(--accent); border-color: var(--accent); }
+.crumb:hover .arw { transform: translateX(-4px); }
+
+/* Hero shots: real product proof, right after the headline, before any
+   explanation. Placeholder slots now, drop-in <img> later, swapping the
+   real screenshot in doesn't touch this layout at all. Fanned/overlapping
+   for a "dynamic" first impression without looping motion, the site rule
+   is reveal-once or respond-to-input, nothing autoplays forever, so the
+   energy comes from the static composition (rotation + stagger + depth),
+   not from continuous animation. One settle-in on scroll-reveal, then still. */
+.hero-shots {
+  position: relative;
+  height: 300px;
+  margin: 30px 0 12px;
+}
+.hshot {
+  position: absolute; top: 0; left: 0;
+  width: min(300px, 62vw);
+  opacity: 0;
+  transition: opacity var(--d3) var(--e-out), transform var(--d3) var(--e-spring);
+  transition-delay: calc(var(--i, 0) * 110ms);
+}
+.hero-shots.is-in .hshot { opacity: 1; }
+
+.hshot--1 { left: 0; top: 26px; z-index: 4; transform: rotate(-8deg) translateY(22px) scale(.94); }
+.hero-shots.is-in .hshot--1 { transform: rotate(-6deg) translateY(0) scale(1); }
+.hshot--2 { left: 200px; top: 0; z-index: 3; transform: rotate(3deg) translateY(22px) scale(.94); }
+.hero-shots.is-in .hshot--2 { transform: rotate(4deg) translateY(0) scale(1); }
+.hshot--3 { left: 400px; top: 46px; z-index: 2; transform: rotate(-2deg) translateY(22px) scale(.94); }
+.hero-shots.is-in .hshot--3 { transform: rotate(-3deg) translateY(0) scale(1); }
+/* 4th slot, About's photography set only (case-study hero shots stay at
+   3). Continues the same tapering z-index/rotation pattern. */
+.hshot--4 { left: 600px; top: 14px; z-index: 1; transform: rotate(6deg) translateY(22px) scale(.94); }
+.hero-shots.is-in .hshot--4 { transform: rotate(5deg) translateY(0) scale(1); }
+
+.hshot .shot-ph {
+  aspect-ratio: 16 / 10;
+  box-shadow: 0 22px 44px -18px rgba(42, 27, 77, .3);
+}
+.hshot .shot-img {
+  width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block;
+  border-radius: 14px; box-shadow: 0 22px 44px -18px rgba(42, 27, 77, .3);
+}
+
+/* About-only: a small headshot beside the case-facts row, forming one
+   compact identity line instead of a floating portrait competing with the
+   h1. */
+.about-id { display: flex; align-items: center; gap: 26px; flex-wrap: wrap; margin-top: 30px; }
+.about-headshot { width: 108px; height: 108px; flex: none; border-radius: 50%; overflow: hidden; }
+.about-headshot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.about-id .case-facts { margin-top: 0; flex: 1 1 260px; }
+
+/* No rule above the facts row. The gap between it and whatever precedes it
+   is what marks it as a separate block. */
+.case-facts {
+  display: flex; gap: 34px; flex-wrap: wrap; margin-top: 44px;
+}
+.case-facts div { display: flex; flex-direction: column; gap: 5px; }
+.case-facts .k { font-family: "Raleway", sans-serif; font-weight: 500; font-size: 0.7875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); }
+.case-facts .v { font-size: 1.05rem; font-weight: 500; }
+
+/* TL;DR block: the answer stated before the table of contents, not after it.
+   Same honesty-pattern voice as .note, but purple (the primary claim)
+   instead of orange (a caveat). Editorial split, not a grid of cards: one
+   wide statement on the left, stacked bold-label facts on the right, real
+   text either way, so both a skimming human and an LLM asked to summarize
+   this page can extract it directly. */
+.tldr {
+  margin-top: 30px; padding: 40px 44px;
+  background: var(--accent-soft); border-left: 3px solid var(--accent);
+  border-radius: 0 16px 16px 0; scroll-margin-top: 96px;
+}
+.tldr-lbl {
+  display: block; font-family: "Raleway", sans-serif; font-weight: 500;
+  font-size: 0.75rem; letter-spacing: 0.09em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 22px;
+}
+.tldr-split { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 48px; align-items: start; }
+.tldr-lead {
+  font-family: "Raleway", sans-serif; font-size: 1.5rem; font-weight: 600;
+  letter-spacing: -0.02em; line-height: 1.4; color: var(--ink);
+}
+.tldr-facts { display: flex; flex-direction: column; gap: 16px; }
+.tldr-facts p { font-size: 1.05rem; color: var(--ink-2); line-height: 1.55; }
+.tldr-facts p b { color: var(--ink); font-weight: 600; }
+
+/* The narrative lede, relocated out of the always-visible hero. It now sits
+   where the reader actually commits to reading, a standfirst at the start
+   of the body rather than one more paragraph stacked in the fold. Full
+   width and split into its two natural sentences (product / growth)
+   rather than one run-on column. */
+.case-transition {
+  max-width: none; padding-top: 60px;
+}
+
+/* Editorial split: the magazine pattern from the TL;DR block, generalized
+   for reuse anywhere in the case study. .split is an even two-column
+   read; .split--lead narrows the left column for a "statement + stacked
+   supporting facts" shape (paired with .kv-group below). .beat--wide lifts
+   the 760px reading cap so a beat has room for two real columns instead
+   of squeezing them into half of an already-narrow measure. */
+.split { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; margin-bottom: 16px; }
+/* A .split is a two-column READ and only works with exactly two children.
+   With one it leaves a dead column beside the text. With three or more, CSS
+   grid fills row-major, so item 3 lands under item 1 and the reader cannot
+   tell whether to go across or down; that ambiguity is the defect, not the
+   column count. Anything other than two collapses to one column at reading
+   measure, because at full width a single column runs ~100 characters.
+
+   Scoped by child count rather than by adding a modifier to each instance:
+   the shape of the content is what decides this, and content changes.
+   .beat--illo .split is declared later and wins the tie, so illustrated beats
+   keep their own single-column rule regardless. */
+.split:has(> :only-child),
+.split:has(> :nth-child(3)) { grid-template-columns: minmax(0, var(--read)); }
+.split--lead { grid-template-columns: 0.85fr 1.15fr; }
+/* Higher specificity than the plain .split rule above, so this wins the
+   cascade regardless of source order: the intro lede needs a lot more air
+   before the rail than a mid-page split needs before its next element. */
+.case-transition.split { margin-bottom: 120px; }
+ /* matches .case-hero's own 120px top padding for real top/bottom symmetry */
+.beat.beat--wide { max-width: none; } /* combined-class selector, always beats the plain .beat rule regardless of source order */
+.kv-group { display: flex; flex-direction: column; gap: 22px; }
+.kv-group .kv { max-width: none; }
+
+.case-body { padding: 0 0 40px; }
+.case-prose { min-width: 0; }
+
+/* Lilac wash behind the whole read, once you're past the rail. Pairs
+   with .intro-band--split: purple hero, white facts zone, sticky rail
+   locks in, then the body itself picks up the same --surface-2 lilac
+   the site already uses as its "secondary zone" tint elsewhere (plain
+   .intro-band, chip backgrounds), instead of defaulting to bare canvas.
+   Same 100vw full-bleed technique as .rail/.intro-band; .case-body is
+   otherwise a bare block so it needs its own stacking context here. */
+.case-body--lilac {
+  position: relative; z-index: 0;
+  padding-top: 64px; /* the rail's own margin-bottom moved here and lost:
+    the gap between rail and first heading now renders in lilac instead
+    of the plain white it used to bleed into. */
+}
+.case-body--lilac::before {
+  content: "";
+  position: absolute; top: 0; bottom: 0; left: 50%; right: 50%;
+  width: 100vw; margin-left: -50vw;
+  background: var(--surface-2);
+  z-index: -1;
+}
+@media (max-width: 1000px) { .case-body--lilac { padding-top: 44px; } }
+@media (max-width: 700px) { .case-body--lilac { padding-top: 28px; } }
+
+/* When the very first thing in the body is a dark book-cover (#problem,
+   #start, now #baseline), .case-body--lilac's own top padding above still
+   renders, as a lilac strip below the rail, before the dark section's own
+   ::before background kicks in a beat later. Cancel that padding exactly
+   with a matching negative margin on the dark section itself so the purple
+   begins right under the rail with no seam. Scoped to :first-child so this
+   never touches a dark section anywhere else in the flow. */
+.case-prose > .zebra--dark:first-child { margin-top: -64px; }
+@media (max-width: 1000px) { .case-prose > .zebra--dark:first-child { margin-top: -44px; } }
+@media (max-width: 700px) { .case-prose > .zebra--dark:first-child { margin-top: -28px; } }
+
+/* Pages without .rail (Token Studio + the 8 mini-pages, short single-decision
+   write-ups with no section index to interrupt the flow) go straight from
+   .intro-band into .case-body. All of .case-transition.split's breathing
+   room lives inside the tinted zone above the seam, none of it in the white
+   zone below, so the first heading landed with no visible gap of its own.
+   Anchor case studies (Codefi, ConGenius) don't need this, .rail already
+   provides real separation there. */
+.case-body--no-rail { padding-top: 80px; }
+@media (max-width: 1000px) { .case-body--no-rail { padding-top: 64px; } }
+@media (max-width: 700px) { .case-body--no-rail { padding-top: 40px; } }
+
+/* Rail, v3: a horizontal strip in normal document flow, not a sidebar.
+   position:sticky handles "becomes sticky once you scroll past it" on its
+   own, no scroll listener needed, it docks under the main nav once its
+   natural position scrolls out of view and releases when you scroll back
+   above it.
+
+   Top offset used to be a hand-computed guess (~72/68px, based on the nav's
+   padding plus its tallest inline child, which was the pill-shaped nav-cta
+   button). That guess went stale the moment the nav-cta button was removed
+   (shorter nav, same guess left in place) and produced a real bug: a gap
+   under the nav where the page content still scrolling past showed through
+   before the rail actually docked. Fixed properly instead of re-guessing a
+   new number: motion.js now measures the nav's real rendered height on
+   load and resize and exposes it as --nav-h, so this can't drift out of
+   sync with the nav again. The px fallback only covers the instant before
+   JS runs / no-JS. */
+.rail {
+  position: sticky; top: var(--nav-h, 68px); z-index: 40;
+  margin-bottom: 0; padding: 22px 0;
+}
+/* Full 100vw bleed for the background + divider, same technique as
+   .intro-band and Home's .sec-tint, pinned to .rail's own box (sticky
+   elements are a valid containing block for this). The rail's actual
+   content (.rail ol) stays aligned to the page's own gutter, only the
+   bar and its bottom line reach the true viewport edges, so it reads
+   as a nav strip, not a boxed content module. */
+.rail::before {
+  content: "";
+  position: absolute; top: 0; bottom: 0; left: 50%; right: 50%;
+  width: 100vw; margin-left: -50vw;
+  background: rgba(252, 251, 254, .9);
+  background: color-mix(in srgb, var(--canvas) 90%, transparent);
+  backdrop-filter: saturate(1.6) blur(12px);
+  -webkit-backdrop-filter: saturate(1.6) blur(12px);
+  border-bottom: 1px solid var(--line);
+  z-index: -1;
+}
+.rail .rail-lbl { display: none; }
+
+/* Feathered edges: fade the chip row out at whichever side still has
+   overflow, so a cut-off card reads as "more to scroll" instead of a
+   hard clip. Hidden by default on the left (nothing to scroll back to
+   yet), shown on the right (there's always more past the 6th-ish card).
+   motion.js toggles .is-scrolled / .is-end based on actual scroll
+   position, so the feather only ever appears on the side that's real. */
+.rail-scroll { position: relative; }
+.rail-scroll::before, .rail-scroll::after {
+  content: ""; position: absolute; top: 0; bottom: 0; width: 56px; z-index: 2;
+  pointer-events: none; opacity: 0; transition: opacity var(--d2) var(--e-out);
+}
+.rail-scroll::before { left: 0; background: linear-gradient(to right, var(--canvas), transparent); }
+.rail-scroll::after { right: 0; background: linear-gradient(to left, var(--canvas), transparent); opacity: 1; }
+.rail-scroll.is-scrolled::before { opacity: 1; }
+.rail-scroll.is-end::after { opacity: 0; }
+
+.rail ol {
+  list-style: none; display: flex; flex-direction: row; gap: 8px;
+  overflow-x: auto; padding: 0;
+  scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+}
+.rail ol::-webkit-scrollbar { display: none; }
+.rail li { scroll-snap-align: start; }
+.rail a {
+  display: inline-flex; gap: 8px; align-items: baseline;
+  white-space: nowrap; text-decoration: none;
+  font-size: 0.9rem; color: var(--ink-3);
+  border: 1px solid var(--line-2); border-radius: 999px;
+  padding: 8px 15px;
+  transition: color var(--d1) var(--e-out), border-color var(--d1) var(--e-out), background var(--d1) var(--e-out);
+}
+/* No opacity here. The section number is real text, and at .7 it measured
+   2.65:1 inactive and 3.0–3.3:1 active across all three accents, all under AA.
+   The size step (0.75rem against the label's 0.9rem) already de-emphasises it,
+   so the opacity was buying nothing and costing legibility. */
+.rail a .n { font-family: "Raleway", sans-serif; font-size: 0.75rem; }
+.rail a:hover { color: var(--ink); border-color: var(--ink-3); }
+.rail a.is-active { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); font-weight: 600; }
+
+/* A quiet label, not a chapter badge. No fill, no pill, no "Act" framing,
+   just enough of a heading to keep h1→h2→h3 outline intact for a11y and
+   for anything summarizing the page. The bridge lines carry the actual
+   narrative connective work; this just orients a skimmer. */
+.sec-label {
+  display: block;
+  font-family: "Raleway", sans-serif;
+  font-size: 0.825rem; font-weight: 500;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--accent);
+  margin: 46px 0 8px;
+}
+.beat { max-width: var(--read); margin-bottom: 60px; scroll-margin-top: 96px; }
+
+/* A beat holding a two-column .split must NOT inherit the single-column
+   reading measure. --read (760) is the correct measure for ONE column of
+   prose; dividing it by two yields (760 - 48) / 2 = 356px, which at the
+   18.6px body size is ~38 characters per line. The comfortable range is
+   45-75 and the target is 60-70, so every split beat on the site has been
+   running at roughly half the measure it wants, which is why those
+   paragraphs render as tall narrow columns with a dead band beside them.
+
+   This is the same finding already recorded on .beat--illo below ("the
+   prose track is --read and splitting that again yields ~350px columns").
+   That fix was scoped to illustrated beats only and never applied to
+   plain splits, which are the more common case.
+
+   Widened to --max rather than to some intermediate value for two
+   reasons: (760 - 48) / 2 lands each column at 556px, about 60 characters,
+   which is the middle of the comfortable range rather than an edge of it;
+   and .case-facts and .case-shot already run the full content width, so
+   the prose now aligns with them instead of stopping two thirds across.
+   .beat--wide, .case-shot and .beat--illo are the three existing
+   precedents for breaking --read; this is the fourth and it was missed.
+
+   :has() rather than a new class on 17 elements across 7 files. If it
+   ever fails to match, the beat simply falls back to --read, which is
+   today's behaviour, so there is nothing to guard. */
+.beat:has(> .split) { max-width: var(--max); }
+
+/* Screenshot placeholder: diagonal hatch reads as "not a broken image,
+   deliberately unfinished" rather than a missing asset. Sits as its own
+   sibling between sections (same pattern as the concept diagrams) so it
+   never inherits a tinted section's background behind it. */
+/* Deliberately NOT var(--read): a UI screenshot is the strongest proof-of-craft
+   artifact on the page and should run the full content column, matching the
+   width the chapter's own case-facts/heading already use, not be shrunk to
+   paragraph measure and left floating with dead space beside it. */
+.case-shot { max-width: none; margin: 8px 0 60px; }
+/* Discarded-idea variant: an abandoned direction, not shipped evidence,
+   so it shouldn't claim the same full-width weight as a real .case-shot.
+   Capped and centered at reading measure instead. */
+.case-shot--sm { max-width: var(--read); margin-left: auto; margin-right: auto; }
+/* Two discarded/exploratory artifacts shown as a pair, each with its own
+   caption rather than the shared caption .shot-gallery uses. Square crop
+   (not the 16:10 of a real .case-shot) is deliberate: reinforces these
+   are sketches/ideation, not on-screen product evidence. Runs the full
+   content width like .case-shot itself, not var(--read), the "smaller"
+   comes from the square crop and the paired layout, not a narrower
+   column: the content width is the page's own established measure. */
+.case-shot-pair { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; max-width: none; margin: 8px 0 60px; }
+.case-shot-pair figure { margin: 0; }
+.case-shot-pair .shot-ph, .case-shot-pair .case-shot-img { aspect-ratio: 1 / 1; }
+.case-shot-pair .case-shot-img { width: 100%; object-fit: cover; border-radius: 14px; display: block; }
+.case-shot-pair .cap {
+  font-family: "Raleway", sans-serif; font-size: 0.7875rem; color: var(--ink-3);
+  margin-top: 12px; line-height: 1.55;
+}
+.shot-ph {
+  aspect-ratio: 16 / 10;
+  border-radius: 14px;
+  border: 1.5px dashed var(--line-2);
+  background-image: repeating-linear-gradient(135deg, var(--surface-2) 0 10px, var(--surface) 10px 20px);
+  display: grid; place-items: center;
+}
+.shot-ph-label {
+  font-family: "Raleway", sans-serif; font-weight: 500;
+  font-size: 0.8625rem; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--ink-3); background: var(--surface);
+  padding: 7px 15px; border-radius: 999px; border: 1px solid var(--line-2);
+}
+/* Real screenshot, same box a .shot-ph placeholder occupied (16:10,
+   14px radius), swapped in once the asset exists. No border/dashes,
+   those were placeholder-only signal. */
+.case-shot-img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 14px; display: block; }
+.case-shot .cap {
+  font-family: "Raleway", sans-serif; font-size: 0.7875rem; color: var(--ink-3);
+  margin-top: 12px; line-height: 1.55;
+}
+
+/* Shot gallery: for chapters where the real asset is plural, not singular,
+   a set of ad creatives, a mixed batch of collateral, not one screenshot.
+   .case-shot forces N distinct images into one caption; this gives each
+   its own tile and its own label instead. Same .shot-ph dashed-hatch
+   placeholder, just gridded, so swapping in real crops later is a
+   drop-in per tile, same as .case-shot already is. Grid mechanics copied
+   from the already-verified .mini-grid (3-col, 22px gap, collapses to
+   1fr at 1000px), not invented fresh. */
+.shot-gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin: 8px 0 60px; max-width: none; }
+.shot-gallery--2 { grid-template-columns: repeat(2, 1fr); }
+.shot-gallery--3 { grid-template-columns: repeat(3, 1fr); }
+.shot-gallery--4 { grid-template-columns: repeat(4, 1fr); }
+.shot-gallery .shot-ph { aspect-ratio: 4 / 3; }
+/* Real per-tile image, same box a gallery .shot-ph occupied (4:3, 14px
+   radius), same swap-in relationship .case-shot-img has to .shot-ph. */
+.shot-gallery-img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 14px; display: block; }
+.shot-gallery figure { margin: 0; }
+.shot-gallery .cap {
+  font-family: "Raleway", sans-serif; font-size: 0.75rem; color: var(--ink-3);
+  margin-top: 9px; line-height: 1.5;
+}
+/* One shared caption under the whole grid instead of per-tile: spans all
+   columns. Only takes effect as a direct child (an actual grid item), so
+   it's harmless on the per-tile figcaption use above. */
+.shot-gallery > .cap { grid-column: 1 / -1; margin-top: -4px; }
+/* The mini-pages have no .sec-label tier above their beats, so on those pages
+   the beat heading IS the second level and ships as an <h2>. Styled identically
+   to the h3 used on the long-read pages: the visual weight of a beat heading
+   shouldn't shift just because the document outline around it is shallower. */
+.beat h2, .beat h3 { font-size: 1.575rem; margin-bottom: 12px; letter-spacing: -0.02em; }
+.beat h4 { font-size: 1.125rem; margin-bottom: 8px; }
+.beat p { font-size: 1.1625rem; color: var(--ink-2); margin-bottom: 14px; }
+.beat p b, .beat li b { color: var(--ink); font-weight: 600; }
+.beat ul { margin: 0 0 16px 0; list-style: none; }
+.beat li { font-size: 1.0875rem; color: var(--ink-2); margin-bottom: 9px; padding-left: 22px; position: relative; }
+.beat li::before {
+  content: ""; position: absolute; left: 4px; top: 0.62em;
+  width: 7px; height: 2px; background: var(--accent); border-radius: 2px;
+}
+
+.inline-link {
+  color: var(--accent); font-weight: 600; text-decoration: none;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 100% 1px; background-repeat: no-repeat; background-position: 0 100%;
+  transition: background-size var(--d2) var(--e-out);
+}
+.inline-link:hover { background-size: 0% 1px; }
+
+.readmore {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: "Raleway", sans-serif; font-size: 0.8625rem;
+  color: var(--accent); text-decoration: none; padding: 8px 0;
+}
+.readmore .arw { transition: transform var(--d2) var(--e-spring); }
+.readmore:hover .arw { transform: translateX(4px); }
+
+.bridge {
+  max-width: 640px; margin: 56px 0; padding: 24px 0 24px 26px;
+  border-left: 3px solid var(--orange);
+  font-family: "Raleway", sans-serif; font-size: 1.5rem; font-weight: 500;
+  letter-spacing: -0.02em; line-height: 1.42; color: var(--ink);
+}
+
+/* No rules between rows. Row separation is spacing only: the label column
+   plus the vertical rhythm below does the grouping work a hairline used to. */
+.kv { display: grid; grid-template-columns: 128px 1fr; gap: 18px; max-width: var(--read); }
+.kv .k { font-family: "Raleway", sans-serif; font-weight: 500; font-size: 0.7875rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); padding-top: 3px; }
+.kv .v { font-size: 1.0875rem; }
+
+/* Gap and padding widened, at 14px/18px this read as boxed rather than
+   airy: fewer elements per card than .tile (which earns its tighter 22px
+   padding by packing an icon, status, stat, title, paragraph and link into
+   one card), so the same tight spacing here just looked cramped instead
+   of dense. */
+.mini-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin: 28px 0 60px; max-width: none; }
+/* No :hover here on purpose: .mini is a plain, non-interactive card (no
+   href, no click target), so it doesn't get a hover state. Site-wide rule
+   as of 2026-08-13: hover states are reserved for elements that are
+   actually clickable. */
+.mini {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 26px;
+}
+/* Same reasoning as .beat h2 above: a .mini card that follows a .sec-label
+   directly is the third level, not the fourth, so it ships as an h3 there. */
+.mini h3, .mini h4 { font-size: 1.05rem; margin-bottom: 12px; }
+.mini p { font-size: 0.96rem; line-height: 1.55; color: var(--ink-2); }
+.mini .status { margin-top: 20px; }
+
+.outcomes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 24px 0 60px; max-width: 920px; }
+.outcomes--2 { grid-template-columns: repeat(2, 1fr); max-width: 640px; }
+.outcome { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; }
+.outcome.is-pending { background: transparent; border-style: dashed; }
+.outcome .n { font-family: "Raleway", sans-serif; font-size: 1.65rem; font-weight: 600; letter-spacing: -0.03em; }
+.outcome .l { font-size: 0.9375rem; color: var(--ink-2); margin-top: 7px; line-height: 1.5; }
+
+/* HONESTY NOTE. The treatment used on case pages.
+
+   It replaced a boxed component (tinted panel, rounded corners, coloured left
+   rule) which is the system-alert / toast pattern in every design language.
+   These blocks are not alerts. They are editorial footnotes about method, evidence
+   and what wasn't measured, and they should read as marginalia inside a
+   considered document, which is the register the rest of the site sits in.
+
+   So: no container at all. A hairline above, the label set as a margin
+   heading in its own left column, body at a real reading measure beside it.
+   Nothing to look "tacked on" because there is nothing tacked on.
+
+   Width is label + gap + measure (190 + 36 + 660 = 886) rather than the full
+   1160 content column on purpose. At full width the body would run ~100
+   characters at 16.2px, which is the same too-long-measure problem the old
+   inline 14.5px version had, just at a bigger size.
+
+   Deliberately NOT given the .beat class: .beat caps at var(--read) and would
+   fight the grid. data-reveal is an attribute hook, so the scroll animation
+   works without it. */
+.note {
+  display: grid;
+  grid-template-columns: 190px minmax(0, 660px);
+  gap: 36px;
+  /* Capped so the hairline ENDS where the content ends. Without this the
+     border sits on the grid container, which fills the full 1160 column,
+     while the tracks only occupy 886 — the rule then promises a width the
+     text never delivers and the block reads as unfinished. */
+  max-width: 886px;
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+  margin: 30px 0 60px;
+  scroll-margin-top: 96px;
+}
+
+/* Full-width variant, for notes long enough to survive being split.
+   Going full width REQUIRES two columns: one column at 1160 runs about 100
+   characters at 16.2px, which is the same too-long-measure defect this whole
+   component was built to fix. Two columns across the 934px body track land at
+   445px each, about 49 characters, which is inside the comfortable range.
+
+   Applied by word count, not to every note. Body copy here runs from 10 to
+   102 words; below roughly 45 a split produces two columns of two lines,
+   which looks like a rendering accident rather than a layout. Short notes
+   stay single-column and capped. */
+.note--split { max-width: none; grid-template-columns: 190px 1fr; }
+/* NOT multicol. CSS multi-column balances purely on height and will cut
+   mid-clause, and the obvious fix, making each sentence its own block with
+   break-inside: avoid, breaks the paragraph into a line per sentence, which
+   is worse than the problem.
+
+   So: two real columns, ONE paragraph in each. Text flows continuously inside
+   a column exactly as prose should, and the break between columns is a
+   sentence boundary because it was chosen rather than computed. The split
+   point per note was picked to balance the two column heights. */
+.note--split .note-body { display: grid; grid-template-columns: 1fr 1fr; gap: 44px; align-items: start; }
+.note-body > p { margin: 0; }
+@media (max-width: 1040px) { .note--split .note-body { grid-template-columns: 1fr; gap: 0; } }
+.note .lbl {
+  font-family: "Raleway", sans-serif; font-weight: 500;
+  font-size: 0.75rem; letter-spacing: 0.09em; text-transform: uppercase;
+  color: var(--ink-3); line-height: 1.45; padding-top: 3px;
+}
+.note-body { font-size: 1.0125rem; line-height: 1.65; color: var(--ink-2); }
+.note-body b { color: var(--ink); font-weight: 600; }
+/* Collapses at the same 940px breakpoint .beat--illo uses, so the label sits
+   above its body rather than squeezing the measure below ~45 characters. */
+@media (max-width: 940px) {
+  .note, .note--split { grid-template-columns: 1fr; gap: 9px; padding-top: 14px; margin: 24px 0 42px; }
+}
+
+
+.case-fig { max-width: 840px; margin: 28px 0 60px; }
+
+.pager {
+  display: flex; align-items: center; justify-content: space-between; gap: 20px;
+  /* Not a true asymmetry, 30/30 was even, but the small uppercase .lbl
+     line reads visually lighter than the bold h3 below it, so equal
+     padding looked top-heavy. Nudged 4px off each side to compensate,
+     component-wide since it's an optical issue with the content shape,
+     not anything About-specific. */
+  padding: 26px 26px 34px; border-radius: 18px; background: var(--surface);
+  border: 1px solid var(--line); margin: 40px 0 0; text-decoration: none; color: inherit;
+  transition: transform var(--d2) var(--e-out), border-color var(--d2) var(--e-out);
+}
+.pager:hover { transform: translateY(-3px); border-color: var(--accent); }
+/* Stacked pagers (2-3 in a row on the Codefi/ConGenius pages) read as one
+   link list, not separate content blocks, so back-to-back pagers get a
+   tighter gap than a pager's default 40px separation from the prose above it. */
+.pager + .pager { margin-top: 16px; }
+.pager .lbl { font-family: "Raleway", sans-serif; font-weight: 500; font-size: 0.7875rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
+.pager h3 { font-size: 1.65rem; margin-top: 8px; }
+.pager .arw { font-size: 1.65rem; color: var(--accent); transition: transform var(--d2) var(--e-spring); }
+.pager:hover .arw { transform: translateX(6px); }
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.foot {
+  margin-top: 96px; padding: 0 0 60px;
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 20px; flex-wrap: wrap; font-size: 0.975rem; color: var(--ink-2);
+}
+.foot a { text-decoration: none; }
+.foot .links { display: flex; gap: 20px; flex-wrap: wrap; }
+.foot .links a { position: relative; }
+.foot .links a::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -3px; height: 1px;
+  background: var(--accent); transform: scaleX(0); transform-origin: 0 50%;
+  transition: transform var(--d2) var(--e-out);
+}
+.foot .links a:hover { color: var(--accent); }
+.foot .links a:hover::after { transform: scaleX(1); }
+
+/* ============================================================
+   A11Y
+   ============================================================ */
+:focus-visible { outline: 2px solid var(--violet); outline-offset: 3px; border-radius: 6px; }
+.skip {
+  position: absolute; left: -9999px; top: 0; z-index: 200;
+  background: var(--ink); color: #fff; padding: 12px 18px; border-radius: 0 0 10px 0;
+  font-size: 0.975rem; text-decoration: none;
+}
+.skip:focus { left: 0; }
+
+/* ============================================================
+   RESPONSIVE. Mobile is the primary case, not an afterthought.
+   Three moves matter most:
+   1. The sticky section rail becomes a horizontal chip strip (a 10-section
+      long-read with no in-page nav is unusable on a phone).
+   2. Wide diagrams scroll instead of scaling into illegibility.
+   3. Every hover-transform is neutralised on touch so states don't stick
+      after a tap, and tap targets go to ~44px.
+   ============================================================ */
+
+/* The hero blob's -10% right offset assumes a wide page gutter to overhang
+   into. .wrap caps at 1160, so below about 1280 the gutter is thinner than
+   the overhang and the blob runs past the viewport, where html's
+   overflow-x:hidden cuts it flush against the screen edge. A hard vertical
+   cut through an organic shape reads as a rendering fault, not composition.
+   Measured, not guessed: 1031px of content at a 1024 viewport, 405 at 390.
+   1280 is the widest viewport where it still overflows. */
+@media (max-width: 1280px) {
+  .scene-blob { right: -2%; }
+}
+
+/* ---- tablet / small laptop ---- */
+@media (max-width: 1000px) {
+  .hero-copy { grid-column: 1 / span 12; }
+  .hero-vis  { grid-column: 1 / span 12; padding-top: 10px; max-width: 440px; }
+  .hero { padding: 96px 0 96px; }
+  .tile { grid-column: span 3; }
+
+  /* The fanned/overlapping composition needs ~700px of room to not
+     overlap the viewport edge, below that it becomes a plain scrollable
+     row: static, unrotated, no reveal choreography, just there. */
+  .hero-shots {
+    position: static; height: auto;
+    display: flex; gap: 14px; overflow-x: auto;
+    padding-bottom: 4px; margin: 26px 0 10px;
+    scrollbar-width: none;
+  }
+  .hero-shots::-webkit-scrollbar { display: none; }
+  .hshot {
+    position: static; width: 200px; flex: 0 0 auto;
+    opacity: 1; transform: none !important;
+  }
+}
+
+/* ---- desktop: hero, sized to its own content ----
+   Was forced to min-height:100vh, headline + shot cluster vertically
+   centered/anchored inside whatever leftover space that left. On a normal
+   laptop viewport that leftover space is huge relative to a ~300-380px
+   image cluster, so the hero read as mostly empty purple no matter where
+   inside it the images sat, first centered (gap above AND below), then
+   bottom-anchored (gap only above, same total emptiness, just moved).
+   Fixed at the source instead of by repositioning again: the hero now
+   sizes to its actual content (headline + a tight gap + the shot cluster),
+   no forced viewport-height minimum. The 4-up About variant is untouched,
+   it lives on .case-hero--compact, which was already opted out of the old
+   100vh rule and never went through this. */
+@media (min-width: 1001px) {
+  .case-hero {
+    display: flex; flex-direction: column;
+    padding: 132px 0 0;
+  }
+  .case-hero h1 { flex: 0 0 auto; }
+  .case-hero--compact { display: block; padding: 122px 0 44px; }
+
+  .hero-shots { flex: 1 1 auto; height: auto; min-height: 340px; margin: 48px 0 0; }
+  .hshot {
+    width: clamp(260px, 27vw, 420px);
+    top: 50%; left: var(--hx);
+    transform: translateY(calc(-50% + 22px)) rotate(var(--hr-off)) scale(.94);
+  }
+  .hero-shots.is-in .hshot { transform: translateY(-50%) rotate(var(--hr)) scale(1); }
+
+  .hshot--1 { --hx: 2%;  --hr-off: -8deg; --hr: -6deg; z-index: 4; }
+  .hshot--2 { --hx: 34%; --hr-off: 3deg;  --hr: 4deg;  z-index: 3; top: calc(50% - 26px); }
+  .hshot--3 { --hx: 64%; --hr-off: -2deg; --hr: -3deg; z-index: 2; top: calc(50% + 26px); }
+  /* 4th slot, About's photography set only. Case-hero pages only ever use
+     3, so this doesn't touch their spacing. Tighter hx step (vs. the
+     22-30% gaps above) so a 4-up row stays inside the container instead
+     of bleeding past the right edge on a 1001-1200px viewport. */
+  .hero-shots--4 .hshot--1 { --hx: 0%; }
+  .hero-shots--4 .hshot--2 { --hx: 24%; top: calc(50% - 22px); }
+  .hero-shots--4 .hshot--3 { --hx: 47%; top: calc(50% + 14px); }
+  .hero-shots--4 .hshot--4 { --hx: 70%; --hr-off: 6deg; --hr: 5deg; z-index: 1; top: calc(50% - 10px); }
+
+  /* Case-study hero shots only (the 3-up cluster, scoped off the About
+     4-up set via :not() so the rule above stays exactly as it was for
+     About). No flex-grow, no vertical centering: a fixed-height box that
+     hugs directly under the headline (44px gap), sized to the cluster's
+     own footprint at its new ~1.5x scale.
+
+     Tried letting two cards overhang this box on purpose, betting that
+     .case-hero-wave (painted after, higher z-index) would mask the
+     overhang and read as "tucked under the white section." It didn't:
+     the wave's fill is a curve, not a solid band, so it only covers part
+     of its own width at any given x, and the overhang at hshot--3's
+     position landed in a stretch of the curve that's mostly transparent.
+     What actually rendered was the raw card edge hanging past the purple
+     into the white zone below, an unmasked rectangle, not a tuck. Fixed
+     by giving up on the wave-as-mask trick and just sizing the box to
+     fully contain the tallest card (bottom ~395px) instead, height 400px,
+     a few px of slack rather than a deficit. No overflow, no reliance on
+     the curve's geometry lining up with card placement. */
+  .hero-shots:not(.hero-shots--4) { height: 400px; min-height: 0; flex: 0 0 auto; margin: 44px 0 0; }
+  .hero-shots:not(.hero-shots--4) .hshot {
+    width: clamp(300px, 30vw, 480px);
+    top: var(--hy); left: var(--hx);
+    transform: translateY(22px) rotate(var(--hr-off)) scale(.94);
+  }
+  .hero-shots.is-in:not(.hero-shots--4) .hshot { transform: translateY(0) rotate(var(--hr)) scale(1); }
+  .hero-shots:not(.hero-shots--4) .hshot--1 { --hx: 0%;  --hy: 50px; }
+  .hero-shots:not(.hero-shots--4) .hshot--2 { --hx: 30%; --hy: 0px; }
+  .hero-shots:not(.hero-shots--4) .hshot--3 { --hx: 56%; --hy: 95px; }
+
+  /* Alternate hero arrangement, opt-in, first used on codefi-product.html.
+     Text and a vertically-stacked bundle of the same three shots side by
+     side, instead of a full-width headline with the cluster fanned out
+     underneath it. Two modifier classes: .case-hero--side turns the
+     header into a row (the headline needs its own wrapper, .case-hero-copy,
+     since a flex row needs exactly two items to split); .hero-shots--stack
+     restacks the shots top-to-bottom instead of left-to-right. Every other
+     page keeps the plain .case-hero / .hero-shots pair above, untouched,
+     both new classes are additive and only this page's markup carries them. */
+  /* align-items:center below already centers the headline against the
+     stack cross-axis-to-cross-axis, so the two columns agree with each
+     other. What was still off: the row itself sat high in the purple
+     band, because .case-hero's 132px top padding had nothing symmetric
+     below it, only .intro-band--split's own ~56px. Padding-bottom here
+     brings the two sides close enough (132 top vs. 56+80 bottom) that the
+     row reads as centered in the band, not just internally aligned. */
+  .case-hero.case-hero--side { flex-direction: row; align-items: center; justify-content: space-between; gap: 48px; padding: 112px 0 80px; }
+  .case-hero.case-hero--side .case-hero-copy { flex: 1 1 auto; max-width: 600px; }
+  .case-hero.case-hero--side .hero-shots { margin: 0; }
+
+  .hero-shots.hero-shots--stack { width: clamp(360px, 32vw, 460px); height: 560px; flex: 0 0 auto; }
+  .hero-shots.hero-shots--stack .hshot {
+    width: 84%; left: var(--sx); top: var(--sy);
+    transform: translateY(18px) rotate(var(--hr-off)) scale(.95);
+  }
+  .hero-shots.hero-shots--stack.is-in .hshot { transform: translateY(0) rotate(var(--hr)) scale(1); }
+  .hero-shots.hero-shots--stack .hshot--1 { --sx: 14%; --sy: 0px;   --hr-off: -4deg; --hr: -3deg; z-index: 2; }
+  .hero-shots.hero-shots--stack .hshot--2 { --sx: 0%;  --sy: 148px; --hr-off: 3deg;  --hr: 2deg;  z-index: 3; }
+  .hero-shots.hero-shots--stack .hshot--3 { --sx: 16%; --sy: 288px; --hr-off: -2deg; --hr: -1deg; z-index: 4; }
+}
+
+/* ---- phone ---- */
+@media (max-width: 700px) {
+  :root { --gut: 14px; }
+  .wrap { padding: 0 20px; }
+
+  /* nav: name collapses to the glyph, links scroll horizontally */
+  .nav .wrap { padding-top: 11px; padding-bottom: 11px; flex-wrap: nowrap; gap: 10px; }
+  .mark-name { display: none; }
+  /* With the name hidden, the home link is just the 28px glyph, which is
+     well under a thumb-sized target. min-height grows the hit area without
+     growing the glyph or the nav: the wrap's 11px padding leaves 47px of
+     content box, so 44 fits and --nav-h does not move. */
+  .mark { min-height: 44px; }
+  .navlinks {
+    flex: 1; justify-content: flex-end; gap: 0;
+    overflow-x: auto; scrollbar-width: none; flex-wrap: nowrap;
+  }
+  .navlinks::-webkit-scrollbar { display: none; }
+  .navlinks a { padding: 11px 10px; font-size: 0.9375rem; white-space: nowrap; }
+  .navlinks a::after { left: 10px; right: 10px; }
+  .rail { top: var(--nav-h, 68px); margin-bottom: 0; }
+
+  .hero { padding: 61px 0 68px; }
+  .hero .sub { font-size: 1.1625rem; margin-top: 18px; }
+  .cta-row { margin-top: 26px; gap: 10px; }
+  .btn { padding: 14px 22px; }
+
+  .tile, .bento--2up .tile { grid-column: 1 / -1; padding: 20px 20px 18px; }
+  .bento { gap: 12px; }
+
+  .sec { padding: 64px 0; }
+  .sec-head { align-items: flex-start; }
+  .stat-row, .mini-grid, .outcomes, .tldr-split, .split, .shot-gallery, .shot-gallery--2, .shot-gallery--4, .case-shot-pair { grid-template-columns: 1fr; gap: 20px; }
+  .split { margin-bottom: 12px; }
+  .split ul { margin-top: 4px; }
+  .band { padding: 60px 22px; border-radius: 18px; margin: 32px 0 38px; }
+  .stat-item .stat-l { max-width: none; }
+  .sec--tight { padding: 24px 0 48px; }
+  .proof { flex-direction: column; align-items: flex-start; gap: 24px; padding: 24px 22px; }
+  .proof-body { max-width: none; }
+
+  .kv { grid-template-columns: 1fr; gap: 4px; }
+  .kv .k { padding-top: 0; }
+  .pager { flex-direction: row; align-items: center; padding: 24px 20px; }
+  .pager h3 { font-size: 1.35rem; }
+  .case-hero { padding: 72px 0 40px; }
+  .case-facts { gap: 18px 26px; margin-top: 34px; }
+  .about-id { flex-direction: column; align-items: flex-start; gap: 16px; margin-top: 24px; }
+  .tldr { padding: 26px 22px; margin-top: 22px; }
+  .tldr-lead { font-size: 1.25rem; }
+  .case-transition { padding-top: 44px; }
+  .case-transition.split { margin-bottom: 72px; } /* matches mobile .case-hero's 72px top padding */
+  .beat { margin-bottom: 42px; }
+  .bridge { font-size: 1.3125rem; padding: 18px 0 18px 20px; margin: 40px 0; }
+  .case-shot { margin: 4px 0 42px; }
+  .mini-grid { margin-bottom: 42px; }
+  .outcomes { margin-bottom: 42px; }
+  .shot-gallery { margin-bottom: 42px; }
+  .case-fig { margin-bottom: 42px; }
+
+  .foot { flex-direction: column; align-items: flex-start; gap: 14px; margin-top: 64px; padding: 0 0 48px; }
+  .foot .links { flex-direction: column; gap: 10px; }
+}
+
+/* ---- wide diagrams: scroll, do not shrink ---- */
+@media (max-width: 620px) {
+  .fig-scroll svg { min-width: 520px; }
+  .figure { padding: 16px; }
+
+  /* Opt-out for diagrams authored narrow enough to fit a phone.
+     The 520px floor above exists so figure text stays legible rather than
+     shrinking to nothing, and horizontal scroll is the price. A diagram
+     that is laid out compactly should not pay that price.
+
+     #catalog's figure was rebuilt from a 640-wide three-zone row into a
+     440-wide stack (two estimates side by side, catalog beneath) precisely
+     so it clears this. Scale at 320px is about 0.73, which keeps its 10px
+     labels above 7px rather than the ~5px a 640 viewBox would give.
+
+     Add a section to this selector only after checking the figure's viewBox
+     width is <= 440. Below that the text stops being readable and the
+     scroll was the better trade. */
+  #catalog .fig-scroll svg { min-width: 0; }
+}
+
+/* ---- touch: no sticky hover states, bigger targets ---- */
+@media (hover: none) {
+  .tile:hover, .pager:hover, .btn:hover,
+  .btn-ghost:hover, .link-arrow:hover { transform: none; box-shadow: none; }
+  .tile:hover { border-color: var(--line); }
+  .tile:hover .t-icon .ic-fill { fill-opacity: .14; }
+  .btn-ghost:hover { background: transparent; border-color: var(--line-2); }
+  .link-arrow:hover { background: transparent; color: var(--accent); }
+  .btn:hover { background: var(--ink); }
+  .navlinks a:hover::after { transform: scaleX(0); }
+  .navlinks a.current::after { transform: scaleX(1); }
+  .foot .links a:hover::after { transform: scaleX(0); }
+  .mark:hover .glyph { transform: none; background: var(--accent); }
+  .inline-link:hover { background-size: 100% 1px; }
+
+  /* press feedback replaces hover feedback */
+  .tile:active, .pager:active, .mini:active { transform: scale(.985); }
+  .btn:active, .btn-ghost:active, .link-arrow:active { transform: scale(.96); }
+  .tile, .pager, .btn, .btn-ghost, .link-arrow { transition-duration: 120ms; }
+}
+
+/* ---- very small phones ---- */
+@media (max-width: 380px) {
+  .wrap { padding: 0 16px; }
+  .rail { margin-bottom: 0; }
+  .tile .stat { font-size: 1.425rem; }
+  .band { padding: 52px 18px; }
+}
+
+/* About's photo set sits inside a .beat, not a .case-hero, so it needs
+   real breathing room before the text below it. .hero-shots' own
+   margin-bottom is 0-12px across the three breakpoint rules above
+   (correct there, the hero hands off straight to the wave/rail), placed
+   last on purpose so it wins the tie at every width instead of needing
+   a copy inside each breakpoint block. */
+.hero-shots--4 { margin-bottom: 48px; }
+@media (max-width: 700px) {
+  .hero-shots--4 { margin-bottom: 34px; }
+}
+
+/* ============================================================
+   CHAPTER SYSTEM, v3
+   ------------------------------------------------------------
+   Appended deliberately at the END of the file. Several rules below
+   intentionally win a specificity TIE against earlier ones (.beat's own
+   margin-bottom, .case-shot's own margin) by source order, which is the
+   same convention the file already uses elsewhere. Moving this block
+   earlier will silently reintroduce double-gaps.
+
+   Replaces the .zebra / .cover / .cover--full arrangement on case study
+   pages. That arrangement had one class (.cover--full, min-height:100vh
+   + flex-centering) doing two incompatible jobs: acting as an entire
+   section on its own (#baseline, correct) and acting as a header for a
+   section that then continued with figures and beats (#problem, #latency,
+   #scale, wrong). In the second case the cover reserved a full viewport
+   and centered a short block of text in it, so everything after it began
+   a screen late. That is the dead space under Context's dek.
+
+   The fix is a hard separation:
+     .pcover  full-height, contains nothing but its own head, one per page
+     .chap    the repeatable unit, height ALWAYS from content, never min-height
+     .tween   unnumbered connective line between chapters
+
+   ⚠ DEAD CODE, 2026-08-13. The .zebra/.cover rules below were kept so the
+   original single-page Codefi and ConGenius pages would keep rendering
+   during the split. Neither page is in the deployed site, and no live page
+   uses any .zebra* or .cover* class. That is 32 rule blocks, ~49 lines,
+   ~2.1KB, safe to delete but NOT deleted here because it has not been
+   verified in a browser. The mini pages kept rendering while this is
+   validated on codefi-product.html. Delete them only after all four
+   pages are migrated.
+   ============================================================ */
+
+:root {
+  --chap-pad: 92px;   /* the chapter's own vertical rhythm, the ONLY source */
+  --chap-gap: 56px;   /* between slots inside a chapter */
+}
+
+/* ---- PAGE COVER ------------------------------------------------------
+   Full-height is safe here and ONLY here, because a .pcover is not
+   permitted to contain body content. Nothing can be pushed a screen down
+   by it, since there is nothing after it inside it. */
+.pcover {
+  position: relative; z-index: 0;
+  min-height: 100vh; min-height: 100svh;
+  display: flex; align-items: center; justify-content: space-between; gap: 56px;
+  padding: 120px 0;
+}
+.pcover::before {
+  content: "";
+  position: absolute; top: 0; bottom: 0; left: 50%; right: 50%;
+  width: 100vw; margin-left: -50vw;
+  background: var(--night);
+  z-index: -1;
+}
+.pcover-head { max-width: 640px; }
+/* Right-hand visual on the page cover: without it, .pcover-head's 640px
+   cap left a hard, unbalanced void in the remaining ~450px of the dark
+   band on any screen wider than a laptop. Fixed size rather than flexible,
+   so the diagram doesn't stretch and thin out on ultrawide screens. */
+.pcover-visual { flex: 0 0 510px; max-width: 510px; }
+.pcover-visual .figure { margin: 0; }
+.figure--mini { padding: 22px; }
+.figure--mini svg, .figure--mini img { max-width: 260px; margin: 0 auto; border-radius: 10px; }
+/* Real photo/screenshot standing alone on the dark cover, no card:
+   no border, no background, no corner blob, just the image sized to
+   the same visual column .figure--mini used to occupy. Sized 1.5x the
+   original diagram's footprint, per Shantanu's call. */
+.pcover-img { display: block; width: 100%; max-width: 450px; height: auto; margin: 0 auto; }
+@media (max-width: 1100px) {
+  .pcover-visual { flex-basis: 420px; max-width: 420px; }
+}
+@media (max-width: 1000px) {
+  .pcover { flex-direction: column; align-items: flex-start; gap: 40px; }
+  .pcover-visual { flex-basis: auto; max-width: 480px; }
+}
+@media (max-width: 700px) {
+  .pcover-visual { max-width: 390px; }
+}
+.pcover-head h2 {
+  color: var(--on-night);
+  font-size: clamp(2.15rem, 4.6vw, 3.35rem);
+  margin: 20px 0 18px; letter-spacing: -0.02em; max-width: 740px;
+}
+.pcover-head .dek {
+  color: var(--on-night-2);
+  font-size: 1.325rem; max-width: 640px; margin: 0 0 14px;
+}
+.pcover-head .dek:last-child { margin-bottom: 0; }
+.pcover-head .kicker { display: block; margin-bottom: 4px; }
+
+/* When the page cover is the first thing in the body, .case-body--lilac's
+   own top padding renders as a light strip between the white rail and the
+   dark cover. Same cancellation the .zebra--dark version already uses. */
+.case-prose > .pcover:first-child { margin-top: -64px; }
+
+@media (max-width: 1000px) {
+  .pcover { min-height: 0; padding: 84px 0; }
+  .case-prose > .pcover:first-child { margin-top: -44px; }
+}
+@media (max-width: 700px) {
+  .pcover { padding: 64px 0; }
+  .pcover-head h2 { font-size: clamp(1.7rem, 6.4vw, 2.3rem); }
+  .pcover-head .dek { font-size: 1.1rem; }
+  .case-prose > .pcover:first-child { margin-top: -28px; }
+}
+
+/* ---- CHAPTER ---------------------------------------------------------
+   CONTRACT A, single-owner spacing. The chapter owns its padding; every
+   slot inside it owns margin-bottom and nothing else. No slot can create
+   a gap merely by existing, and no gap ever needs a negative-margin
+   cancellation, which is what the old arrangement kept requiring.
+
+   CONTRACT C, anchor offset. The rail docks under the nav, so an anchor
+   must clear both. --rail-h is measured in motion.js alongside --nav-h. */
+.chap {
+  position: relative; z-index: 0;
+  padding: var(--chap-pad) 0;
+  scroll-margin-top: calc(var(--nav-h, 68px) + var(--rail-h, 56px) + 24px);
+}
+.chap::before {
+  content: "";
+  position: absolute; top: 0; bottom: 0; left: 50%; right: 50%;
+  width: 100vw; margin-left: -50vw;
+  z-index: -1;
+}
+
+/* CONTRACT B, computed striping. Tint is derived from the chapter's own
+   position among its siblings, never hand-written per section. Insert,
+   delete or reorder a chapter and the whole page re-stripes itself with
+   no other edit. This is the actual mechanical fix for "adding a section
+   breaks the structure": the old zebra--a / zebra--b classes were literal
+   markup, so one insertion inverted the tint of every section below it.
+
+   Requires the ONLY <section> children of .case-prose to be chapters:
+   .pcover is a <header>, .tween is a <p>, and beats inside a chapter are
+   <div>s, so nothing else can enter the nth-of-type count. */
+.chap:nth-of-type(odd)::before  { background: var(--surface-2); }
+.chap:nth-of-type(even)::before { background: var(--surface); }
+
+.chap > * { margin-top: 0; margin-bottom: var(--chap-gap); }
+.chap > :last-child { margin-bottom: 0; }
+
+/* ---- slot 1, chapter head -------------------------------------------
+   No min-height, at any breakpoint, on purpose. Height comes from content.
+   Type scale sits deliberately below .pcover-head so the page reads as
+   one big opening moment followed by chapters, not eight equal covers. */
+/* Full column width, not the 760px read measure. The head sits directly
+   above .beat--wide content that runs the full 1096px, so capping the whole
+   head at 760 made the top of every chapter read as a narrow block bolted
+   onto a wide one. Width is now controlled per element below: the display
+   h2 and the facts grid run wide, only the dek keeps a reading cap. */
+.chap-head { max-width: none; }
+.chap-kicker {
+  display: inline-flex; align-items: center; gap: 9px;
+  font-family: "Raleway", sans-serif; font-weight: 500;
+  font-size: 0.8125rem; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--accent);
+}
+.chap-kicker .idx {
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  font-weight: 700;
+}
+/* 940px, not 700: at 2.5rem that's roughly 48 characters, so a short
+   chapter title ("Turning a required wait into onboarding") sets on one
+   line instead of breaking after four words, and a long one still wraps
+   to two. Display type, so measure isn't the constraint here. */
+.chap-head h2 {
+  font-size: clamp(1.75rem, 3.4vw, 2.5rem);
+  margin: 14px 0 16px; letter-spacing: -0.02em; max-width: 940px;
+}
+/* The one element in the head that keeps a cap. 820px holds most deks to
+   two full lines rather than three ragged ones, without running body copy
+   the entire 1096px. */
+.chap-head .dek {
+  font-size: 1.1625rem; color: var(--ink-2); max-width: 820px; margin: 0;
+}
+/* Full read-measure, not the 640px the old .cover--full used. .case-facts
+   is a flex-wrap row; at 640px a four-fact set wrapped its last item onto
+   a lonely second row on both #latency and #scale, which read as a layout
+   error rather than a deliberate two-row grouping. */
+/* A four-up GRID, not .case-facts' default flex-wrap row. Inside the read
+   measure a wrapping row put the last fact on a lonely second line whenever
+   one value ran long ("Sales, ops, investor relations, MVP tracking, agents"),
+   and the raggedness differed per chapter, so no two chapter heads lined up.
+   Four equal tracks wrap inside their own column instead, giving every
+   chapter head the same fact block silhouette regardless of value length. */
+.chap-head .case-facts {
+  margin-top: 40px; max-width: none;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px 28px;
+}
+
+/* ---- slot 7, outcome -------------------------------------------------
+   Optional by decision. Where a chapter has no measurable outcome, the
+   honesty callout (.note) carries that job instead and says so. */
+.chap-out {
+  max-width: var(--read);
+  border-left: 3px solid var(--accent);
+  padding: 4px 0 4px 22px;
+}
+.chap-out .lbl {
+  display: block;
+  font-family: "Raleway", sans-serif; font-weight: 500;
+  font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 8px;
+}
+.chap-out p { margin: 0 0 10px; color: var(--ink-2); }
+.chap-out p:last-child { margin-bottom: 0; }
+
+/* ---- interstitial ----------------------------------------------------
+   Connective tissue between chapters. Never numbered, never a rail entry,
+   never a link target. Sits outside any chapter so it inherits the page
+   canvas rather than either stripe. */
+.tween {
+  position: relative;
+  max-width: var(--read);
+  margin: 0 auto; padding: 68px 0;
+  font-size: 1.075rem; color: var(--ink-2); font-style: italic;
+  text-align: center;
+}
+/* No ::before rule. An earlier version marked the interstitial with a short
+   centred accent line, because on the canvas it merged into the lilac of an
+   odd-numbered chapter and read as that chapter's opening line rather than a
+   bridge between two. Removed on request: the ornament was doing more work
+   visually than the sentence under it was doing editorially. Extra vertical
+   padding separates it instead. */
+
+@media (max-width: 1000px) {
+  :root { --chap-pad: 68px; --chap-gap: 44px; }
+}
+@media (max-width: 700px) {
+  :root { --chap-pad: 52px; --chap-gap: 36px; }
+  .chap-head h2 { font-size: clamp(1.5rem, 5.8vw, 2rem); }
+  .chap-head .dek { font-size: 1.0625rem; }
+  .chap-head .case-facts { margin-top: 30px; grid-template-columns: repeat(2, 1fr); gap: 20px 22px; }
+  .tween { padding: 30px 0; font-size: 1rem; }
+}
+
+/* Two-up variant of .mini-grid. Needed once the 3-card set on Scale lost
+   its third card (AI-native interaction patterns was promoted to its own
+   chapter): three columns holding two cards leaves a visibly empty third
+   track. Placed after the responsive block above so the single-column
+   collapse at 900px still wins on narrow screens. */
+.mini-grid--2 { grid-template-columns: repeat(2, 1fr); }
+@media (max-width: 900px) { .mini-grid--2 { grid-template-columns: 1fr; } }
+
+/* Two CTAs per home-page section instead of one, from the 4-page split:
+   each company now has a product story and a growth story, and the section
+   head has to offer both without the flex row's space-between pushing them
+   to opposite ends. Wrapping them keeps the pair together as one unit on
+   the right of the head. */
+.sec-ctas { display: flex; gap: 10px; flex-wrap: wrap; }
+@media (max-width: 700px) {
+  .sec-ctas { width: 100%; }
+  .sec-ctas .link-arrow { flex: 1 1 160px; justify-content: center; }
+}
+
+/* Full-narrative links, demoted below the tile grid so the tiles (the
+   actual evidence) get read first. A recruiter scanning shouldn't have to
+   pick a full case study before seeing a single fact. */
+.sec-more {
+  margin-top: 34px;
+  display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+}
+.sec-more .lbl {
+  font-family: "Raleway", sans-serif; font-weight: 500;
+  font-size: 0.75rem; letter-spacing: 0.09em; text-transform: uppercase;
+  color: var(--ink-3); white-space: nowrap;
+}
+.sec-dark .sec-more .lbl { color: var(--on-night-2); }
+@media (max-width: 700px) {
+  .sec-more { flex-direction: column; align-items: flex-start; gap: 12px; }
+}
+
+/* ============================================================
+   ILLUSTRATION SLOT — the off-screen human situation
+   ============================================================
+   Third medium in the case-study figure system. The division of
+   labour is deliberate and load-bearing:
+
+     .case-shot  screenshot     what shipped, the on-screen artifact
+     .case-fig   hand SVG       system structure, how the parts relate
+     .case-illo  illustration   what happens off-screen, the human
+                                situation the product responds to
+
+   Three rules encoded below, each with a reason:
+
+   1. NOT a .figure card. .figure paints var(--surface) with a border
+      and an accent-soft corner blob. On an even (lilac) chapter that
+      renders a white plate, and the illustration would then read as
+      the same class of object as the schematic diagram sitting a few
+      hundred pixels away. Bare and transparent keeps the two media
+      visually distinct, which is the entire justification for adding
+      a third one.
+
+   2. Source images MUST be transparent PNGs. Chapters alternate
+      --surface / --surface-2 from .chap:nth-of-type parity, so a
+      baked-in ground is correct on exactly half the page and wrong on
+      the other half, and it silently flips if a chapter is ever
+      inserted above. Transparent is the only version that survives
+      the insertion contract from Case-Study-Architecture-Spec.md.
+
+   3. margin-bottom only, per chapter rhythm contract A. The chapter
+      owns all vertical rhythm; no slot may create a gap by existing.
+
+   Narrower than .case-fig (560 vs 840) on purpose. The diagram carries
+   the argument and should dominate; the illustration sets up the human
+   situation and should read as a vignette, not a hero.
+   ============================================================ */
+/* LAYOUT: .beat--illo puts the illustration in the gutter that already
+   exists to the right of every capped .beat, instead of giving it a
+   full-width band of its own.
+
+   Chosen over a float after rendering all three candidates side by side
+   (illo-layout-prototype.html, since deleted). Two findings drove it:
+
+   - A float forces the beat's measure open from --read (760) to ~1000 to
+     make room. Wrapped lines then read fine while any line BELOW the
+     float runs ~95 characters, in the same list. Widening the measure to
+     fit an image is a legibility regression the reader feels and the
+     author doesn't.
+   - shape-outside on the PNG alpha bought nothing measurable. These
+     figures are arms-out silhouettes whose alpha contour is already a
+     rectangle, so the silhouette wrap rendered indistinguishably from a
+     box wrap while adding a threshold to tune per image.
+
+   Illustrated beats collapse their .split to one column, because the
+   prose track is --read and splitting that again yields ~350px columns.
+
+   row-gap is explicitly 0. A single `gap` also applies between rows,
+   which pushed the h3 away from its own first paragraph. */
+.beat--illo {
+  max-width: none;
+  display: grid;
+  /* Both tracks flex, roughly 60:40. Fixed tracks were tried and fail:
+     `var(--read) 1fr` measured 284px of illustration at 1440 and 148px
+     at 1024, because a rigid prose track gives nothing back as the
+     container narrows. Ratio tracks keep the split stable at every
+     width and let the illustration read at real size rather than as a
+     thumbnail in a gutter. Prose still lands inside a comfortable
+     measure (about 580px at 1440, 500px at 1024) without needing
+     --read as a cap here. */
+  grid-template-columns: 1.25fr 1fr;
+  column-gap: 52px;
+  row-gap: 0;
+  align-items: start;
+}
+.beat--illo > h3 { grid-column: 1 / -1; }
+
+/* Compact variant, for an illustrated beat whose prose is a single short
+   paragraph. The default 1.25fr/1fr tracks assume two or three paragraphs
+   beside the figure; at five lines a full-track image renders about twice the
+   height of the copy it belongs to and stops reading as support. Caps the
+   figure rather than re-weighting the tracks, so the prose keeps its measure,
+   and centres it vertically against the shorter text block. */
+.beat--illo--compact { grid-template-columns: 1.5fr 1fr; align-items: center; }
+.beat--illo--compact .case-illo { max-width: 300px; margin-left: auto; }
+@media (max-width: 940px) {
+  .beat--illo--compact .case-illo { max-width: 260px; margin: 0; }
+}
+.beat--illo .split { grid-template-columns: 1fr; gap: 0; }
+
+/* FIGURE: bare and transparent, never a .figure card.
+   .figure paints --surface with a border and a corner blob, which would
+   render a white plate on every even (lilac) chapter and would make the
+   illustration read as the same class of object as the schematic sitting
+   beside it. Keeping the two media visually distinct is the entire
+   justification for adding a third one.
+
+   Source images MUST be transparent PNGs: chapters alternate
+   --surface / --surface-2 by .chap:nth-of-type parity, so a baked-in
+   ground is correct on exactly half the page and silently flips if a
+   chapter is inserted above (see Case-Study-Architecture-Spec.md). */
+.case-illo { margin: 0; }
+.case-illo img { display: block; width: 100%; height: auto; }
+.case-illo .cap {
+  font-family: "Raleway", sans-serif;
+  font-size: 0.7875rem;
+  color: var(--ink-3);
+  margin-top: 12px;
+  line-height: 1.55;
+}
+
+/* NOTE, 2026-08-15: a .case-illo--lead variant briefly existed here, for
+   an illustration standing in the chapter's opening figure slot after
+   codefi-product #latency's handoff diagram was removed. It was cut the
+   same session along with the figure it carried.
+
+   Kept as a comment because the reasoning is a real constraint on this
+   layer, not a one-off. Four generations went into filling that slot and
+   the best of them still lost to showing nothing, because the chapter
+   already had an illustration on its decision beat and an unfilled
+   screenshot placeholder for the actual shipped slides. Spec §3 already
+   said this: no illustration where real evidence belongs, and art over a
+   gap is what a reviewer is trained to spot.
+
+   If a lead illustration slot is ever genuinely needed, cap it at 660
+   rather than .case-fig's 840. At 840 a figure drawing starts reading as
+   a hero image, which is the register Session 11 removed from Home. */
+
+@media (max-width: 940px) {
+  .beat--illo { grid-template-columns: 1fr; row-gap: 26px; }
+  .beat--illo .case-illo { max-width: 420px; }
+}
+
+/* ============================================================
+   ILLUSTRATION ANNOTATION, .illo-frame / .illo-tag
+   ------------------------------------------------------------
+   Small pills anchored over the illustration, naming the beats of
+   the situation the picture shows. Replaces the two-sentence
+   caption pattern: the caption is now one short line saying what
+   the picture is, and the pills carry the sequence.
+
+   Why overlaid rather than a row underneath: anchoring is the whole
+   point. A pill sitting over the thing it names does work that the
+   same words in a row below the image do not, and a row below is
+   what this degrades to on narrow screens anyway.
+
+   Position comes from --x / --y as percentages of the frame, set
+   per pill in the markup, because the empty region in each
+   illustration is different and there is no rule that finds it.
+   .illo-tag--r flips the anchor to the right edge so a pill near
+   the right side does not run out of frame as its text grows.
+
+   Reveal reuses .fig-pop and the existing --i stagger rather than
+   introducing an animation: .beat--illo already carries
+   data-reveal, so the pills pop in sequence when the beat scrolls
+   into view, and prefers-reduced-motion already neutralises it.
+   ============================================================ */
+.illo-frame { position: relative; }
+.illo-frame img { display: block; width: 100%; height: auto; }
+
+.illo-tag {
+  position: absolute;
+  left: var(--x); top: var(--y);
+  display: inline-flex; align-items: center;
+  padding: 4px 10px;
+  background: var(--surface);
+  color: var(--accent);
+  border: 1px solid var(--violet-lift);
+  border-radius: 999px;
+  font-family: "Raleway", sans-serif;
+  font-size: 0.7rem; font-weight: 600; line-height: 1.25;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(42, 27, 77, .10);
+  z-index: 2;
+}
+.illo-tag--r { left: auto; right: var(--x); }
+
+/* LEADERS REMOVED, 2026-08-15. A hairline used to run from each pill
+   toward what it named, via .illo-tag--lead-r / --lead-l and a --lead
+   length set per pill in the markup.
+
+   It never worked, and the markup showed why before any render did: 19
+   leaders existed across the set using exactly two lengths, 26px and
+   22px. The rule above required tuning each one against its own
+   illustration, because the distance to the named thing is different
+   every time, and that tuning never happened on any of them. So every
+   leader stopped in empty space without reaching anything, and read as
+   a rendering artifact rather than as pointing.
+
+   Not replaced. The pills are positioned over the thing they name, and
+   that overlay IS the anchoring mechanism, which is the stated reason
+   they are overlaid rather than listed under the image. A leader was
+   always redundant with the position when the position was right, and
+   could not rescue it when the position was wrong.
+
+   If leaders ever return they need a per-image tuning pass with the
+   render open, not a default length. */
+
+/* Collapse to a plain wrapping row at the same 940px breakpoint where
+   .beat--illo already goes single-column and the figure caps at 420px.
+   Below that the illustration is too small to hold overlaid pills: they
+   crowd the linework and start landing on faces and hands. The pills
+   keep their document order, so the sequence still reads left to right.
+
+   position:static is what does the work; the flex row exists so the
+   pills wrap under the image rather than sitting inline beside it. */
+@media (max-width: 940px) {
+  .illo-frame { display: flex; flex-wrap: wrap; gap: 6px; }
+  .illo-frame img { flex: 0 0 100%; margin-bottom: 10px; }
+  .illo-tag { position: static; box-shadow: none; }
+}
