@@ -2,100 +2,128 @@
 
 Everything the site needs to run, and nothing else. This folder is the deploy artifact: push its **contents** to the repo root, not the folder itself.
 
-8 pages, 1 stylesheet, 1 script, 15 images. Verified self-contained: every page is reachable from `index.html`, every reference resolves, and no file in here is unreferenced.
+9 pages (index, 404, and 7 case/about pages, each its own folder), 1 stylesheet, 1 script, 89 images, plus 8 old-URL redirect stubs, `sitemap.xml`, `robots.txt`, and `.nojekyll`. Verified self-contained: every page is reachable from `index.html`, every reference resolves, and no file in here is unreferenced.
 
 ```
 portfolio-site/
-├── index.html                  ← home (was v2-home.html)
-├── about.html
-├── capstone.html
-├── codefi-product.html
-├── codefi-growth.html
-├── codefi-tooling.html
-├── congenius-product.html
-├── congenius-growth.html
+├── index.html                  ← home
+├── 404.html
+├── about/index.html
+├── capstone/index.html
+├── codefi-product/index.html
+├── codefi-growth/index.html
+├── codefi-tooling/index.html
+├── congenius-product/index.html
+├── congenius-growth/index.html
 ├── style.css
 ├── motion.js
-└── img/                        ← all 15 images
+├── .nojekyll
+├── sitemap.xml
+├── robots.txt
+├── img/                         ← all 89 images
+└── ux-at-congenius/, product-at-codefi/, leadsigma-internship/,
+    microsoft/, hire-international-student/, toyota/,
+    phone-addiction/, study-space/   ← redirect stubs, old URLs, see below
 ```
 
-`img/` exists because 15 image files at the repo root buries the 8 pages that matter in a directory listing. `style.css` and `motion.js` stay at root deliberately: nesting two files under `css/` and `js/` adds path depth without making anything easier to find. If you later add more scripts, that's the moment to split them out.
+`img/` exists because dozens of image files at the repo root buries the pages that matter in a directory listing. `style.css` and `motion.js` stay at root deliberately: nesting two files under `css/` and `js/` adds path depth without making anything easier to find.
 
-All image references were rewritten to `img/…`. They were all plain `src` attributes in `index.html` and `about.html`; there were no `url()` references in the CSS, no `og:image` tags, and no `srcset`, so nothing else needed touching.
+## Extensionless URLs
 
-## Filenames are URLs
+Done as of 2026-08-18. Every page except `index.html` and `404.html` (which have to stay at root) lives as `pagename/index.html`, so the public URL reads `/about/` rather than `/about.html`. This was flagged as a future option in an earlier version of this doc; it's no longer optional, it's the shipped structure.
 
-Every name here is a public, permanent address. `v2-` was a working prefix from the rebuild and had no business in the address bar, so it's gone.
+Two consequences worth knowing if you ever add a page or move something:
 
-| Was | Now | Public URL |
-|---|---|---|
-| `v2-home.html` | `index.html` | `/` |
-| `v2-about.html` | `about.html` | `/about.html` |
-| `v2-about-capstone.html` | `capstone.html` | `/capstone.html` |
-| `v2-codefi-product.html` | `codefi-product.html` | `/codefi-product.html` |
-| `v2-codefi-growth.html` | `codefi-growth.html` | `/codefi-growth.html` |
-| `v2-codefi-tooling.html` | `codefi-tooling.html` | `/codefi-tooling.html` |
-| `v2-congenius-product.html` | `congenius-product.html` | `/congenius-product.html` |
-| `v2-congenius-growth.html` | `congenius-growth.html` | `/congenius-growth.html` |
-| `v2-style.css` | `style.css` | — |
-| `v2-motion.js` | `motion.js` | — |
+- Every relative reference inside a page in a subfolder needs a leading `../`: images (`../img/...`), the stylesheet, the script, and the favicon. Pages at root (`index.html`, `404.html`) don't.
+- Internal links between pages point at the folder, not a filename: `href="about/"`, `href="codefi-product/#latency"`, and `href="./"` or `href="../"` for links back to home depending on the linking page's own depth.
 
-Every reference was rewritten in the same pass, and the link graph re-verified afterwards.
+| Page | Public URL |
+|---|---|
+| `index.html` | `/` |
+| `about/index.html` | `/about/` |
+| `capstone/index.html` | `/capstone/` |
+| `codefi-product/index.html` | `/codefi-product/` |
+| `codefi-growth/index.html` | `/codefi-growth/` |
+| `codefi-tooling/index.html` | `/codefi-tooling/` |
+| `congenius-product/index.html` | `/congenius-product/` |
+| `congenius-growth/index.html` | `/congenius-growth/` |
 
-Build-history comments were also removed from the shipped pages ("v2 visual refactor. Originals untouched"), since they describe a process no reader has context for and they're visible in View Source.
+The old flat `.html` files (`about.html`, `codefi-product.html`, etc.) are gone. If you ever see them reappear in this folder, delete them before pushing: GitHub Pages would serve both the old and new URL for the same content at once.
 
-**If you want extensionless URLs** (`/about` rather than `/about.html`), that's a different structure: each page becomes `about/index.html`, and every relative link and image path has to move up a level. Worth doing once, badly worth doing twice. Say so before you push rather than after, because changing URLs after they're shared breaks them.
+## Redirects for the old site's URLs
+
+Eight folders, each a single `index.html` that meta-refreshes to the new location (GitHub Pages has no server-side redirects, so this is the standard static-site workaround):
+
+| Old URL | Redirects to |
+|---|---|
+| `/ux-at-congenius` | `/congenius-product/` |
+| `/product-at-codefi` | `/codefi-product/` |
+| `/leadsigma-internship`, `/microsoft`, `/hire-international-student`, `/toyota`, `/phone-addiction`, `/study-space` | `/` (no current equivalent page) |
+
+## SEO files
+
+`sitemap.xml` lists the 8 real pages (root + about + capstone + the 6 case pages), deliberately excluding `404.html` and the redirect stubs. `robots.txt` points crawlers at the sitemap. `.nojekyll` disables GitHub Pages' default Jekyll processing, which this site doesn't use and which silently drops any file or folder starting with `_`.
+
+All three assume the custom domain (`shantanukashyap.me`), not the current `sketches-to-scale.github.io/designer-portfolio/` staging URL. That's fine while you're only sharing with a couple people for feedback; revisit before treating search visibility as live.
 
 ## What was deliberately left out
 
-`v2-codefi.html` and `v2-congenius.html` are **not** here. They are unreachable from the site graph, superseded by the split product/growth/tooling pages. Same for the whole `portfolio-*.html` set (the v1 site), `portfolio-style.css`, all `render-*.png` / `s-*.png` / `shot-*.png` review screenshots, unused hero variants (`hero-figure.svg`, `hero-motif-*.svg`, `hero-scene.svg`, `hero-shot-finn-panel.png`, `v2-hero-shot.jpg`, `about-capstone-visual.png`), every résumé, and every planning `.md`.
-
-If a page looks wrong after deploy, the cause is more likely a missing file than a broken one. Re-run the graph check rather than copying files across by hand.
+The whole `portfolio-*.html` set (the v1 site), `portfolio-style.css`, all `render-*.png` / `s-*.png` / `shot-*.png` review screenshots, unused hero variants, every résumé, and every planning `.md`. If a page looks wrong after deploy, the cause is more likely a missing file than a broken one.
 
 ---
 
-## ⚠ Three things to resolve before this goes public
+## Resolved
 
-These are pre-existing, flagged in the markup itself, and none of them are cosmetic.
+### ~~The Resume link was dead~~ — RESOLVED
 
-### 1. The Resume link is dead on all 8 pages
+All pages link to a hosted Google Drive PDF now, not `href="#"`. Note the résumé file itself is deliberately not in this folder: it's linked externally rather than committed, so it isn't sitting in a public repo with your phone number and address on it.
 
-```html
-<a href="#" target="_blank" rel="noopener"><!-- TBD: resume link --> Resume</a>
-```
+### ~~Acumin Pro would not render~~ — RESOLVED 2026-08-13
 
-Every page ships a nav item that goes nowhere. A reviewer clicking it gets nothing and reads the site as unfinished. Either point it at a hosted PDF or remove the nav item until there is one. Do not ship it as `#`.
+Two families now, both loaded: Raleway and Lato. See git history for the full explanation if the label tier's letter-spacing or weight ever looks off again, it was tuned against a font that's no longer in use.
 
-Note the résumé PDFs were deliberately excluded from this folder. If you want the link to resolve locally, copy the chosen PDF in and point the href at it. Be deliberate about which one: putting a résumé in a public repo makes your phone number and address permanently public and crawlable.
+### ~~The GitHub link decision was open~~ — RESOLVED
 
-### 2. ~~Acumin Pro will not render~~ — RESOLVED 2026-08-13
+The link is live in the footer of every page, pointing at `github.com/sketches-to-scale`. Decided as: that account doesn't carry anything you're not ready to have public.
 
-The type system is now **two families, both loaded**: Raleway and Lato. No further action needed.
+### ~~Home hero and tiles were 8MB~~ — RESOLVED 2026-08-18
 
-What it was: the stylesheet called for three families. Acumin Pro carried the entire metadata tier (chapter kickers, case-fact keys, rail numbers, pager labels, status chips, section numbers) across 21 declarations, more than Raleway and Lato combined. It was never loaded, because it is Adobe-exclusive and there was no Typekit embed. The fallback chain resolved to Futura on macOS, Century Gothic on Windows with Office installed, and generic sans everywhere else, so the label tier rendered as three different typefaces depending on the reader. It looked deliberate during review only because review happened on a Mac.
+`hero-scene.png` and the 7 home-page tile images are now WebP: 8MB down to 725KB. This was the direct fix for a "content pops in instead of fading" bug, the reveal animations run on a fixed timer with no idea whether the image has actually downloaded yet, so a heavy image reliably lost that race on a real network even though it never did testing locally off disk.
 
-What changed: all 21 Acumin declarations now use Raleway, which was already loaded and already the display/UI face. Raleway is also now requested at weight 400 alongside 500/600/700, because 18 of those rules carry no explicit weight and inherit 400; without it the browser would have substituted the nearest available weight.
+---
 
-**Worth an eye before you push.** The letter-spacing on the label tier (0.06em to 0.09em on uppercase text) was tuned against Acumin's widths. Raleway is a wider face, so those labels may now read loose. If they do, the fix is to shave the `letter-spacing` values, not to change the font. Similarly, Raleway runs light at 400; if the small uppercase metadata looks thin, bump those rules to `font-weight: 500`.
+## Flagged, not resolved
 
-### 3. The GitHub link decision is still open
+### The rest of `img/` is 83MB across 89 files
 
-`index.html` carries this note from session 1:
+The home-page fix above only covered the images visible before any scrolling. Every case-study page pulls in its own screenshots, and those were never touched. The worst offenders:
 
-> the GitHub link is deliberately NOT on this page yet ... a public profile may expose SoldNearYou commits
+| File | Size |
+|---|---|
+| `capstone-ideation-carglasses.gif` | 12MB |
+| `codefi-growth-hero-vibeathon-brand.png` | 4.5MB |
+| `capstone-2045-post-reflection-filmstrip.png` | 4.1MB |
+| `capstone-2045-reflect-filmstrip.png` | 3.5MB |
+| `codefi-growth-vibeathon-brand-ads.png` | 3.1MB |
 
-Publishing this repo makes your GitHub profile easier to find regardless of whether you link to it. Decide before pushing: private repos, a curated pinned view, or accept it.
+A 12MB GIF is the standout: GIF is a poor format for anything but simple looping animation, the same content as an MP4 or WebP would likely be a fraction of the size. The four filmstrip/brand images are static screenshots that would convert to WebP the same way the home page ones did, likely 80-90% smaller with no visible loss, same as before.
+
+Not fixed here because it's a bigger pass than "update the doc": 89 files across 7 pages, some need format conversion (GIF), most need WebP conversion and their `<img>` references updated to match. Worth doing before this goes past a 2-3-person feedback share, since these load as people actually scroll through a case study, not all at once like the home page was.
+
+### `style.css` still carries dead `.zebra*` / `.cover*` rules
+
+32 rule blocks, roughly 49 lines and 2.1KB, about 2.9% of the stylesheet. Existed to keep the original single-page Codefi and ConGenius layouts rendering during the split into product/growth/tooling pages; neither of those pages exists anymore, and no live page uses these classes. Labelled in place in the stylesheet, not removed because it's never been verified in a browser and 2.1KB isn't worth an unverified change to a file that drives every page.
 
 ---
 
 ## Deploy checklist
 
-- [ ] Resolve the three items above
-- [ ] Push the **contents** of this folder to the repo root
-- [ ] Settings → Pages → deploy from branch, root
+- [x] Push the **contents** of this folder to the repo root
+- [x] Settings → Pages → deploy from branch, root
+- [ ] Connect the custom domain (deliberately deferred, see `sketches-to-scale/designer-portfolio` conversation history)
 - [ ] Load the deployed URL and click every nav item on two different pages
 - [ ] Load a case page cold on a phone, not a resized desktop window
-- [ ] Confirm no `file://` assumptions: everything here uses relative paths, so this should be clean, but check one image loads
+- [ ] Decide on the 83MB image folder above before sharing beyond a couple people
 
 ## Re-running the integrity check
 
@@ -103,25 +131,4 @@ If you add or rename anything, verify the folder is still self-contained before 
 
 ## ⚠ This folder is the source of truth now
 
-It has diverged from the working copies in `Career/` in three ways: every file is renamed, images live in `img/`, and build-history comments are stripped. The `Career/` copies still use the old `v2-` names and flat image paths.
-
-**Edit here, not in `Career/`.** Copying a page down from `Career/` will reintroduce dead filenames and broken image paths.
-
-## Known dead code, not removed
-
-`style.css` still carries the `.zebra*` and `.cover*` rules: 32 rule blocks, roughly 49 lines and 2.1KB, about 2.9% of the stylesheet. They existed to keep the original single-page Codefi and ConGenius pages rendering during the split into product/growth/tooling. Neither of those pages is in the deployed site, and no live page uses any of those classes.
-
-It is safe to delete and it is labelled in place in the stylesheet. It has **not** been deleted because that has not been verified in a browser, and 2.1KB is not worth shipping an unverified change to a stylesheet that drives eight pages. Delete it when you have the site running locally and can look at it.
-
-## Image weight
-
-12MB across 15 files, and four of the tiles are over 850KB each:
-
-| File | Size |
-|---|---|
-| `tile-congenius-marketing.png` | 1.5MB |
-| `tile-congenius-estimating.png` | 1.5MB |
-| `tile-congenius-catalog.png` | 1.0MB |
-| `tile-designing-scale.png` | 888KB |
-
-Not a blocker for GitHub Pages, which has no per-file limit that these approach. But a reviewer opening the home page on a phone downloads most of that before the tiles resolve. These are screenshots of UI, which compress well: converting the tiles to WebP would likely take the folder under 3MB with no visible loss. Worth doing before you push, since the home page is where the tiles all load at once.
+It has diverged from the working copies in `Career/` (flat filenames, images at root, `v2-` prefixes still in place there). **Edit here, not in `Career/`.** Copying a page down from `Career/` will reintroduce dead filenames, broken image paths, and the flat (non-extensionless) URL structure this folder has since moved past.
