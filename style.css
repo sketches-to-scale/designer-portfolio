@@ -1532,12 +1532,27 @@ section { position: relative; }
     display: flex; gap: 14px; overflow-x: auto;
     padding-bottom: 4px; margin: 26px 0 10px;
     scrollbar-width: none;
+    /* Was a loose scroll with no resting points, which reads as an
+       accident rather than a swipeable set. Snap gives it the same
+       card-to-card intent as .rail elsewhere on the site. */
+    scroll-snap-type: x proximity;
   }
   .hero-shots::-webkit-scrollbar { display: none; }
   .hshot {
-    position: static; width: 200px; flex: 0 0 auto;
+    /* A fixed px width means whether the next card peeks at rest is
+       whatever the viewport happens to leave over, not a designed cue,
+       confirmed on a real device where it landed flush with nothing
+       showing. A viewport-relative width guarantees the same ~20% peek
+       of the next card on any phone, so the strip reads as swipeable
+       before anyone touches it. */
+    position: static; width: min(78vw, 260px); flex: 0 0 auto;
     opacity: 1; transform: none !important;
+    scroll-snap-align: start;
   }
+  /* Desktop's 14px radius was tuned against ~300px cards. At 200px it
+     reads proportionally rounder, closer to a bubble than a screenshot
+     frame, so mobile gets its own smaller value. */
+  .hshot .shot-img, .hshot .shot-ph { border-radius: 10px; }
 }
 
 /* ---- desktop: hero, sized to its own content ----
@@ -1651,8 +1666,10 @@ section { position: relative; }
   /* With the name hidden, the home link is just the 28px glyph, which is
      well under a thumb-sized target. min-height grows the hit area without
      growing the glyph or the nav: the wrap's 11px padding leaves 47px of
-     content box, so 44 fits and --nav-h does not move. */
-  .mark { min-height: 44px; }
+     content box, so 44 fits and --nav-h does not move. min-width +
+     justify-content:center do the same on the horizontal axis, which the
+     original fix missed: height alone still left a 28px-wide sliver. */
+  .mark { min-height: 44px; min-width: 44px; justify-content: center; }
   .navlinks {
     flex: 1; justify-content: flex-end; gap: 0;
     overflow-x: auto; scrollbar-width: none; flex-wrap: nowrap;
