@@ -637,7 +637,13 @@ section { position: relative; }
   border-radius: 16px; padding: 22px 22px 20px;
   display: flex; flex-direction: column; gap: 4px;
   text-decoration: none; color: var(--ink);
-  transition: transform var(--d2) var(--e-out), box-shadow var(--d2) var(--e-out), border-color var(--d2) var(--e-out);
+  /* opacity added so this doesn't clobber [data-reveal]'s fade transition:
+     same property, same specificity, this rule comes later in the file so
+     it was winning outright and opacity had nothing to animate with, the
+     card just snapped from invisible to visible. Kept at --d3 (the
+     reveal's own duration) rather than this rule's --d2, since it only
+     ever fires on reveal, hover never touches opacity. */
+  transition: transform var(--d2) var(--e-out), box-shadow var(--d2) var(--e-out), border-color var(--d2) var(--e-out), opacity var(--d3) var(--e-out);
   will-change: transform;
 }
 
@@ -1454,7 +1460,10 @@ section { position: relative; }
      not anything About-specific. */
   padding: 26px 26px 34px; border-radius: 18px; background: var(--surface);
   border: 1px solid var(--line); margin: 40px 0 0; text-decoration: none; color: inherit;
-  transition: transform var(--d2) var(--e-out), border-color var(--d2) var(--e-out);
+  /* opacity added: same [data-reveal]-clobbering issue as .tile above,
+     this rule was overwriting the fade transition with one that had no
+     opacity in it. */
+  transition: transform var(--d2) var(--e-out), border-color var(--d2) var(--e-out), opacity var(--d3) var(--e-out);
 }
 .pager:hover { transform: translateY(-3px); border-color: var(--accent); }
 /* Stacked pagers (2-3 in a row on the Codefi/ConGenius pages) read as one
