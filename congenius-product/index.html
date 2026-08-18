@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<!-- v3 case study architecture. The PRODUCT DESIGNER half of the ConGenius
+     job. Marketing/brand half lives in congenius-growth.html.
+     Structure per Case-Study-Architecture-Spec.md. The only <section>
+     children of .case-prose are chapters, which is what lets
+     .chap:nth-of-type() own the striping. -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" href="../img/favicon.png">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ConGenius, product design, Shantanu Kashyap</title>
+<meta name="description" content="Three years as the only designer at a construction estimating SaaS, rebuilding a rigid line-item grid into freeform estimating on a shared catalog.">
+<meta property="og:title" content="ConGenius, product design, Shantanu Kashyap">
+<meta property="og:description" content="Three years as the only designer at a construction estimating SaaS. From a rigid grid to freeform estimating.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+<style>
+  /* ConGenius sits at the magenta end of the purple range: clearly not
+     Codefi's blue-violet, still inside the family so wayfinding works
+     without introducing a second hue. */
+  :root { --accent: #74316A; --accent-soft: #F3ECF2; }
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+<div class="progress" aria-hidden="true"></div>
+
+<nav class="nav">
+  <div class="wrap">
+    <a class="mark" href="../">
+      <span class="glyph">SK</span>
+      <span class="mark-name">Shantanu Kashyap</span>
+    </a>
+    <div class="navlinks">
+      <a href="../" class="current" aria-current="true">Work</a>
+      <a href="../about/">About</a>
+      <a href="https://drive.google.com/file/d/1TjVQ_KrvfItAI4MKjaeZ77ZZIEZ_f_Ml/view?usp=sharing" target="_blank" rel="noopener">Resume</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main" tabindex="-1">
+<div class="wrap">
+
+  <!-- ============================ HEADER ============================ -->
+  <div class="intro-band intro-band--dark intro-band--split">
+    <header class="case-hero case-hero--side">
+      <div class="case-hero-copy">
+        <span class="kicker kicker--accent" data-reveal style="--i:0">ConGenius · Product Designer · Jun 2022 – Aug 2025</span>
+        <h1 data-reveal style="--i:1">Rebuilding the workflow a construction business actually runs on, from a rigid grid into freeform estimating</h1>
+      </div>
+
+      <div class="hero-shots hero-shots--stack" data-reveal style="--i:2">
+        <div class="hshot hshot--1" style="--i:0">
+          <img class="shot-img" src="../img/congenius-product-hero-freeform-estimate.png" alt="Freeform estimate entry in the shipped product." loading="lazy" decoding="async">
+        </div>
+        <div class="hshot hshot--2" style="--i:1">
+          <img class="shot-img" src="../img/congenius-product-hero-global-catalog.png" alt="The global catalog and assemblies." loading="lazy" decoding="async">
+        </div>
+        <div class="hshot hshot--3" style="--i:2">
+          <img class="shot-img" src="../img/congenius-product-hero-mobile-estimating.png" alt="Mobile estimating, built for job-site use." loading="lazy" decoding="async">
+        </div>
+      </div>
+  </header>
+    <svg class="case-hero-wave" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0,56 C 480,6 960,102 1440,40 L1440,120 L0,120 Z"></path>
+    </svg>
+  </div>
+
+  <div class="intro-info">
+    <div class="case-facts" data-reveal style="--i:3">
+      <div><span class="k">Role</span><span class="v">First and only designer</span></div>
+      <div><span class="k">Team</span><span class="v">~8 → 18 → 6–7 over three years</span></div>
+      <div><span class="k">Surface</span><span class="v">ConGenius, construction estimating SaaS</span></div>
+      <div><span class="k">Status</span><span class="v">Shipped, MVP through 1.0</span></div>
+    </div>
+
+    <div class="tldr" id="tldr" data-reveal style="--i:4">
+      <span class="tldr-lbl">In short</span>
+      <div class="tldr-split">
+        <p class="tldr-lead">Three years, one designer, ideation to 1.0, and the clearest lesson I have about when a design system starts paying for itself.</p>
+        <div class="tldr-facts">
+          <p><b>Product:</b> estimating rebuilt from a fixed line-item grid into freeform entry on a shared catalog of reusable assemblies.</p>
+          <p><b>Depth:</b> I built the first estimator to the founder's spec, it landed flat, and the rebuild that replaced it is the one I designed.</p>
+          <p><b>Verification:</b> none of the product work was instrumented, so there are no usage numbers to quote.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="case-transition split" data-reveal>
+      <p class="lede">I stayed through the team scaling from eight to eighteen and back down to six. Everything with a UI on it came through me.</p>
+      
+    </div>
+  </div>
+
+  <aside class="rail" aria-label="Section navigation">
+    <div class="rail-lbl">On this page</div>
+    <div class="rail-scroll">
+      <ol>
+        <li><a href="#grid"><span class="n">01</span> The MVP, and why it missed</a></li>
+        <li><a href="#freeform"><span class="n">02</span> Letting estimators enter work their way</a></li>
+        <li><a href="#catalog"><span class="n">03</span> The catalog, and the edges under it</a></li>
+        <li><a href="#lesson"><span class="n">04</span> When to build the system</a></li>
+      </ol>
+    </div>
+  </aside>
+
+  <!-- ============================ BODY ============================ -->
+  <div class="case-body case-body--lilac">
+
+    <div class="case-prose">
+
+      <!-- ================= PAGE COVER =================
+           The grid-to-freeform diagram that used to trail this cover now
+           lives in chapter 02. It went to 01 first, which was wrong: it
+           shows the SOLUTION, and 01 is the diagnosis, so it answered a
+           question that chapter hadn't finished asking and spoiled the
+           two that follow. 01 now runs on its illustration instead. -->
+      <header class="pcover">
+        <div class="pcover-head" data-reveal>
+          <span class="kicker">
+            <span class="chip-word fig-pop" style="--i:0">Product Designer</span>
+            <span class="chip-word fig-pop" style="--i:1">0→1, three years</span>
+            <span class="chip-word fig-pop" style="--i:2">Only designer</span>
+          </span>
+          <h2>An idea, a scope still open, and the one surface the whole business runs on</h2>
+          <p class="dek">ConGenius was an early-stage construction estimating SaaS, still at ideation when I joined: a domain-expert CEO, an engineering lead who knew what could be built, and the scope still open. I did the competitive research, the wireframes, and the prototypes that became the MVP, then carried it through the 1.0 push.</p>
+          <p class="dek">Estimating was the heart of it. Before a contractor bids a job, someone prices every piece of it: materials, labor, equipment, margin. At ConGenius that took hours, by hand. It is the surface nobody puts in a demo.</p>
+        </div>
+
+        <div class="pcover-visual" data-reveal style="--i:1">
+          <img class="pcover-img" src="../img/congenius-chapterhero.png" alt="ConGenius estimating, from the 1.0 push onward." loading="lazy" decoding="async">
+        </div>
+      </header>
+
+      <!-- ================= CHAPTER 01 · grid ================= -->
+      <section class="chap" id="grid">
+
+        <div class="chap-head" data-reveal>
+          <span class="chap-kicker"><span class="idx">01</span> The first version, and why it missed · Diagnosis</span>
+          <h2>The MVP we shipped was a spreadsheet, and it landed flat</h2>
+          <p class="dek">Our CEO had run construction businesses for twenty years and specced the estimator from his own workflow. I had a four-year UX degree and one year of work, I made the case badly, and I built what I was asked to build.</p>
+          <div class="case-facts">
+            <div><span class="k">Surface</span><span class="v">ConGenius estimating, MVP</span></div>
+            <div><span class="k">Role</span><span class="v">Sole designer, building to the founder's spec</span></div>
+            <div><span class="k">Outcome</span><span class="v">Landed flat, users found it complicated</span></div>
+            <div><span class="k">What changed</span><span class="v">Opened the door to a less rigid model</span></div>
+          </div>
+        </div>
+
+<div class="beat beat--illo" data-reveal>
+          <h3>I had no standing in the argument until I understood the trade</h3>
+          <div class="split">
+            <p>I joined knowing nothing about construction, and worse than nothing in one respect: I grew up in India, where buildings go up by different methods than they do here, so the few instincts I had pointed the wrong way. For the first few months I was mostly producing screens on request, and the work was thin enough that leadership had started wondering whether the hire was going to work out. I asked them for resources. They handed me a stack of construction books and I read them end to end.</p>
+            <p>That did not make me a subject-matter expert and I do not claim it did. It made me subject-aware, which was enough to change what I could contribute. I stopped taking requests at face value and started being able to tell the difference between how our founder ran his business and how the person using the software actually worked. Most of what follows on this page is downstream of that.</p>
+          </div>
+
+          <!-- The one illustration on the site where Shantanu is the subject.
+               Justified by illustration spec section 2, tier 2: "here is me doing
+               the thing this chapter describes" is the only framing under which a
+               figure of the author survives the evidence-over-ornament rule, and
+               this beat is literally about him. Runs on caption alone, no
+               .illo-tag pills: pill anchors have to be read off the rendered
+               image and this one hasn't been seen from the authoring side.
+               Three of the set already run caption-only for the same reason. -->
+          <figure class="case-illo">
+            <div class="illo-frame">
+                <img src="../img/congenius-domain-unfamiliar.png"
+                 alt="A designer holding an open book, looking up at four small thought bubbles containing a drywall panel, a row of wall studs, a pair of roof rafters and a notched stair stringer."
+                 width="1024" height="768" loading="lazy" decoding="async">
+              </div>
+              <figcaption class="cap">Learning what a stringer is, three months into designing software for people who already knew.</figcaption>
+            </figure>
+        </div>
+
+        <div class="beat" data-reveal>
+          <h3>Everyone had a reference point, and none of them was the user</h3>
+          <div class="split">
+            <p>The CEO is a detail person and knows estimating cold. He wanted a field for everything: internal notes, vendor notes, customer notes, somewhere to record every consideration a careful estimator carries in their head. Every one of those fields existed because he had once needed it. He was right that the detail matters. What the spec assumed was somebody with time to maintain it.</p>
+            <p>Our buyers were two to four person construction companies, where the person estimating is also the person bidding, buying materials, and often on the tools. Nobody there manages software. Our CTO pulled the other way. He had been around construction, but his instincts were technical, and he wanted keyboard-first patterns and spotlight-style search. Good design for someone who lives in their tools. Our users had one hand free and were standing on a job site.</p>
+          </div>
+        </div>
+
+        <div class="beat" data-reveal>
+          <h3>What shipping it settled that arguing hadn't</h3>
+          <div class="split">
+            <p>The MVP went out as a table, close to Excel, with the modules gated in sequence: finish one before the next unlocks. Users found it complicated and <b>adoption stayed flat</b>. I had argued against the gating and some of the field count, and I argued it the way I knew how, from user examples and what I could see beta users doing. That was the right instinct in the wrong weight class. <b>Secondhand examples lose to twenty years of someone's own firsthand experience</b>, and I kept bringing them for longer than they were working.</p>
+            <p>What moved it was the launch. Once estimators had it and the complaints were specific, the diagnosis below stopped being my opinion. Nobody handed me a rebuild to run. What the launch bought was permission to try something less rigid, and I did the design work from there. What I took from it is not that they were wrong. It is that <b>a founder's own workflow is a sample of one, mine included</b>, and the fastest way to settle that is to put a working version in front of the people who are not in the room.</p>
+          </div>
+        </div>
+
+        <figure class="case-shot" data-reveal>
+          <img class="case-shot-img" src="../img/congenius-product-mvp-table.png"
+           alt="An early whiteboard flow for the estimator alongside the shipped MVP: a rigid table interface with a fixed set of sequential steps (Define Scope, Add Items & Measure, Estimate Costs, Present to Client), the modules gated in order."
+           loading="lazy" decoding="async">
+          <figcaption class="cap">Table-based, and rigid by design: the MVP's steps were fixed and sequential, one module gating the next.</figcaption>
+        </figure>
+
+        <div class="beat beat--illo" data-reveal>
+          <h3>What the rebuild had to fix</h3>
+          <div class="split split--lead">
+            <p>The original surface was a fixed grid: pick a category, pick an item, enter a quantity, repeat. That flow only works if you already know the full itemized breakdown before you start typing. <b>The screen itself was fine. The assumption underneath it was not</b>: that the hardest part of the job was already done before anyone opened the app.</p>
+            <ul>
+              <li>Estimators arrive with a <b>scope of work</b> in a contractor's language, not a list of priced line items</li>
+              <li>They work out the itemization <i>while</i> entering it, so the grid pushed a translation step off-screen into someone's head. <b>That translation, not the typing, was where the hours went</b>, and it never surfaced as a UI complaint because nobody could see it</li>
+              <li>Anything that didn't map cleanly to a category got parked in notes fields, which meant the structured data the rest of the product depended on was quietly incomplete</li>
+            </ul>
+          </div>
+
+          <figure class="case-illo">
+            <div class="illo-frame">
+                <img src="../img/congenius-grid-estimator.png"
+                 alt="An estimator in a hard hat and safety vest holds a handwritten scope of work in one hand and a rigid empty grid in the other, looking between the two."
+                 width="1088" height="608" loading="lazy" decoding="async">
+              <span class="illo-tag fig-pop" style="--x:0%;--y:5%;--i:1">arrives with this</span>
+              <span class="illo-tag fig-pop illo-tag--r" style="--x:0%;--y:5%;--i:2">software wants this</span>
+              <span class="illo-tag fig-pop" style="--x:18%;--y:88%;--i:3">does the rest in his head</span>
+              </div>
+              <figcaption class="cap">What an estimator arrives with, and what the software asked for.</figcaption>
+            </figure>
+        </div>
+
+        <div class="beat" data-reveal>
+          <h3>The one surface that never needed a rebuild</h3>
+          <div class="split">
+            <p>Estimating was rebuilt three or four times and was still being reworked when I left. Create Proposal, which I scoped and designed on my own, <b>shipped once and kept its architecture for three years</b>. It picked up minor tweaks, a section added, a couple of inputs changed, and nothing structural.</p>
+            <p>Proposal building is the simpler problem and I am not claiming otherwise. But it is the same product, the same users and the same three years, with <b>one surface designed out of a founder's workflow and one out of the user's</b>.</p>
+          </div>
+        </div>
+
+        <figure class="case-shot" data-reveal>
+          <img class="case-shot-img" src="../img/congenius-product-present.png"
+           alt="Create Proposal as shipped: the surface that kept its original architecture for three years."
+           loading="lazy" decoding="async">
+          <figcaption class="cap">Create Proposal, unchanged in structure since it shipped.</figcaption>
+        </figure>
+
+        <div class="note note--split" data-reveal><span class="lbl">How I know this</span><div class="note-body"><p>The diagnosis came from user feedback routed through the CEO and from support conversations, not a formal study. I had asked to interview contractors directly and run codesign sessions. The answer was that he had run construction businesses for twenty years and I should ask him.</p><p>That is expertise, and it is one sample. So I worked the channels I had, which leaves me strong qualitative signal and no protocol or control. "Landed flat" is what adoption looked like from where I sat, in support volume and in what users said. Nobody was measuring, so I have no launch numbers behind it.</p></div></div>
+
+      </section>
+
+      <!-- ================= CHAPTER 02 · freeform ================= -->
+      <section class="chap" id="freeform">
+
+        <div class="chap-head" data-reveal>
+          <span class="chap-kicker"><span class="idx">02</span> Core product decision · Shipped</span>
+          <h2>Letting estimators enter work the way they actually say it</h2>
+          <p class="dek">Enter the work in your own words first; apply structure after. The grid didn't disappear, it stopped being the only door in.</p>
+          <div class="case-facts">
+            <div><span class="k">Surface</span><span class="v">ConGenius estimating</span></div>
+            <div><span class="k">Role</span><span class="v">Sole designer</span></div>
+
+            <div><span class="k">Evidence</span><span class="v">Direct user requests, repeated</span></div>
+            <div><span class="k">Status</span><span class="v">Shipped in 1.0</span></div>
+          </div>
+        </div>
+
+
+        <div class="beat beat--illo" data-reveal>
+          <h3>Inverting the order</h3>
+          <div class="split split--lead">
+            <p><b>Estimators enter work in their own words first. Structure gets applied after, not before</b>. Line items became reusable components instead of one-off rows, so a piece of work described once could be pulled into the next estimate.</p>
+            <div class="kv-group">
+              <div class="kv"><span class="k">Constraint</span><span class="v">Multi-tenant data model, a small engineering team, and pricing data shared across tenants with per-tenant overrides</span></div>
+              <div class="kv"><span class="k">Evidence</span><span class="v">Direct user requests, repeated, from the estimators using it daily</span></div>
+              <div class="kv"><span class="k">Ownership</span><span class="v">Sole designer; flows, states, and edge cases worked out with the engineering lead</span></div>
+              <div class="kv"><span class="k">Status</span><span class="v">Shipped in 1.0, still in the product when the engagement ended</span></div>
+            </div>
+          </div>
+        
+          <figure class="case-illo">
+            <div class="illo-frame">
+                <img src="../img/congenius-freeform-own-words.png"
+                 alt="An estimator laying out a job in his own terms, with ordered line items forming from it."
+                 width="1024" height="768" loading="lazy" decoding="async">
+              <span class="illo-tag fig-pop" style="--x:1%;--y:3%;--i:1">in the order he thinks it</span>
+              <span class="illo-tag fig-pop" style="--x:1%;--y:90%;--i:2">the software itemizes after</span>
+              </div>
+              <figcaption class="cap">An estimator entering a job in the order he thinks about it, not the order the software wanted.</figcaption>
+            </figure>
+        </div>
+
+        <figure class="case-shot" data-reveal>
+          <img class="case-shot-img" src="../img/congenius-product-freeform-entry.png" alt="Freeform entry in the shipped product, and the structured line items it produced." loading="lazy" decoding="async">
+          <figcaption class="cap">Freeform entry in the shipped product, and the structured line items it produced.</figcaption>
+        </figure>
+
+        <div class="note note--split" data-reveal><span class="lbl">What was never measured</span><div class="note-body"><p>Estimating was never instrumented. No task-completion times, no before-and-after on how long an estimate took, no error rates, no retention cut by workflow.</p><p>Product analytics were not in place at that stage, and I did not push hard enough to get them in. That is the part I would do differently. Saying "it halved estimating time" would be inventing a number.</p></div></div>
+
+        <div class="note note--split" data-reveal><span class="lbl">How the decision was actually made</span><div class="note-body"><p>The decision came from repeated user requests and a hard constraint set, not a formal options matrix. There is no tidy list of rejected options behind it.</p><p>What was genuinely weighed was scope: extend the grid, or replace the entry model. Replacing it won, because extending it would have kept the translation step exactly where it was.</p></div></div>
+
+      </section>
+
+      <!-- ================= CHAPTER 03 · catalog + edges =================
+           Merged from what were two chapters (catalog, edges). Both were
+           inventory rather than decisions and together ran 620 words on a
+           page already twice its siblings. The assembly argument and the
+           multi-tenant questions are what survived; mobile is now a clause.
+           #edges is retired as an anchor, nothing linked to it. -->
+      <section class="chap" id="catalog">
+
+        <div class="chap-head" data-reveal>
+          <span class="chap-kicker"><span class="idx">03</span> Catalog and the edges under it · Shipped</span>
+          <h2>A shared catalog, and the edges that came with sharing it</h2>
+          <p class="dek">Freeform entry fixed how work got into an estimate. It didn't fix that most of that work had already been entered, on a different job, last month.</p>
+          <div class="case-facts">
+            <div><span class="k">Surface</span><span class="v">Estimating, catalog, mobile</span></div>
+            <div><span class="k">Role</span><span class="v">Sole designer, with the engineering lead</span></div>
+            <div><span class="k">Hardest part</span><span class="v">Multi-tenant price overrides</span></div>
+            <div><span class="k">Status</span><span class="v">Shipped in the 1.0 push</span></div>
+          </div>
+        </div>
+
+        <div class="beat" data-reveal>
+          <h3>Why an assembly beats a line item</h3>
+          <div class="split">
+            <p>Construction estimates rhyme. The same materials, the same labour rates, the same crew configurations recur across jobs with only the quantities moving. Every one of those was being retyped, and every retype is a chance to fat-finger a price into a bid you're contractually held to.</p>
+            <p>The <b>global catalog</b> holds priced items maintained once and pulled into any estimate. On top of it sit <b>assemblies</b>, prebuilt bundles for work that always goes together. A line item saves you a lookup. <b>An assembly saves you a decision you already made</b> and would otherwise make again, slightly differently, under time pressure.</p>
+          </div>
+        </div>
+
+        <figure class="case-shot" data-reveal>
+          <img class="case-shot-img" src="../img/congenius-product-catalog-mobile-views.png" alt="The catalog and assemblies, and the mobile estimating views built for job-site use." loading="lazy" decoding="async">
+          <figcaption class="cap">Work described once on one job is saved to the shared catalog as a named assembly. A later estimate pulls it straight into an empty row as a single unit, instead of someone retyping it and getting a price slightly wrong.</figcaption>
+        </figure>
+
+        <div class="beat beat--illo" data-reveal>
+          <h3>The edges the data layer couldn't settle on its own</h3>
+          <div class="split split--lead">
+            <p>Catalog data is shared across tenants and tenants override prices locally, which generates interface questions rather than only data-layer ones. The same 1.0 push also had to make the workflows usable on a phone on a job site, not just shrink the desktop layout onto one.</p>
+            <ul>
+              <li>A shared price changes and a tenant has overridden it: does their number move, and how do they find out?</li>
+              <li>An estimate has already gone out the door: does it hold the price it was sent at, or track the catalog?</li>
+              <li>Where does the interface admit that these are different numbers, rather than silently picking one?</li>
+            </ul>
+          </div>
+
+          <figure class="case-illo">
+            <div class="illo-frame">
+                <img src="../img/congenius-edges-price-change.png"
+                 alt="An estimator looking up sharply from a printed estimate as a price on it changes by itself."
+                 width="1024" height="768" loading="lazy" decoding="async">
+              <span class="illo-tag fig-pop" style="--x:1%;--y:3%;--i:1">shared price moves</span>
+              <span class="illo-tag fig-pop illo-tag--r" style="--x:1%;--y:88%;--i:2">his estimate changes</span>
+              </div>
+              <figcaption class="cap">A price moving underneath a live estimate.</figcaption>
+            </figure>
+        </div>
+
+        <div class="note" data-reveal><span class="lbl">Who did what</span><div class="note-body">These were worked out with the engineering lead. My contribution was <b>insisting the resolution be visible in the UI rather than settled silently in the data layer</b>, and designing the states that made it visible.</div></div>
+
+      </section>
+
+      <!-- ================= CHAPTER 05 · lesson ================= -->
+      <section class="chap" id="lesson">
+
+        <div class="chap-head" data-reveal>
+          <span class="chap-kicker"><span class="idx">04</span> What I'd do differently · Retrospective</span>
+          <h2>When to build the system, and how long it took me to notice</h2>
+          <p class="dek"><b>You can't define a system before you know what the product is</b>. The mistake wasn't starting without one. It was reading two arguments for building one as reasons I couldn't.</p>
+          <div class="case-facts">
+            <div><span class="k">Period</span><span class="v">Three years, MVP through 1.0</span></div>
+            <div><span class="k">Signals I misread</span><span class="v">High fidelity on demand, 3 to 4 rebuilds of one surface</span></div>
+            <div><span class="k">Cost</span><span class="v">Duplicated work, inconsistent states</span></div>
+            <div><span class="k">Sequel</span><span class="v">Token Studio, built before the code</span></div>
+          </div>
+        </div>
+
+        <div class="beat beat--illo" data-reveal>
+          <h3>Two signals, and I read both of them backwards</h3>
+          <div class="split">
+            <p>For the first stretch there was nothing to systematize. We were still resolving what the product was, and componentizing a surface that changes every month produces a system that documents the wrong thing. That part I would do the same way again.</p>
+            <p>The first signal was how our CEO wanted to work. He thought in finished screens and wanted high-fidelity mockups for every idea. I had come out of that degree with the opposite instinct, low fidelity until high fidelity is necessary, and I spent a long time trying to win that argument instead. He was never going to learn to read a wireframe, and that is not a failing, it is how he thinks. A stakeholder who needs finished-looking screens at exploration speed is the strongest argument for a component system there is, because a system is what makes a throwaway comp cheap. <b>I read it as the reason I had no time to build one</b>.</p>
+          </div>
+        
+          <figure class="case-illo">
+            <div class="illo-frame">
+                <img src="../img/congenius-lesson-inherited-pile.png"
+                 alt="An incoming designer facing a leaning pile of mismatched interface components she has just inherited."
+                 width="1024" height="768" loading="lazy" decoding="async">
+              <span class="illo-tag fig-pop" style="--x:1%;--y:3%;--i:1">new designer arrives</span>
+              <span class="illo-tag fig-pop" style="--x:1%;--y:91%;--i:2">inherits all of it</span>
+              </div>
+              <figcaption class="cap">The designer who arrives after three years without a system.</figcaption>
+            </figure>
+        </div>
+
+        <div class="beat" data-reveal>
+          <div class="split">
+            <p>The second was the rebuild count. Estimating went through three or four and <b>was still being reworked when I left</b>. I read that as unstable requirements, which it was, and kept drawing screens. Repeated rebuilds of one surface are the other condition a system pays for. <b>Three refactors in, I should have stopped drawing and built the layer that would absorb the fourth.</b></p>
+            <p>The cost showed up as duplicated work, inconsistent states across surfaces, and patterns I re-solved because there was no canonical version to point at. None of it was a catastrophe on any single day, which is exactly why it took three years to notice.</p>
+          </div>
+        </div>
+
+        <div class="beat" data-reveal>
+          <p>That lesson has a direct sequel. <a class="inline-link" href="../codefi-tooling/#tokens">Token Studio</a> is a three-tier token system I built later, <b>before a line of production code was written</b>, specifically so the next team wouldn't pay it.</p>
+        </div>
+
+        <div class="chap-out" data-reveal>
+          <span class="lbl">How it ended</span>
+          <p>The engagement ended in August 2025. Three years in, I had taken a product from ideation to 1.0 and run the growth motion that fed it. What I took away matters more than either: when you are the only designer, nothing gets designed unless you notice it needs to be.</p>
+          <p>That is not a title. It is how I have worked since.</p>
+          <p style="margin-top:1.1em">Our CTO left a few months before I did. From his farewell note: <i>"In the early days, you would throw a pretty design at a problem without fully understanding the issue. Now, I see you seeking to understand the problem and reframing your thinking until you're confident that your solution will uphold the requirements."</i></p>
+        </div>
+
+      </section>
+
+      <a class="pager" href="../congenius-growth/" data-reveal>
+        <div>
+          <span class="lbl">The other half of this job</span>
+          <h3>ConGenius: from graphics to the whole demand side, one earned step at a time</h3>
+        </div>
+        <span class="arw">→</span>
+      </a>
+
+      <a class="pager" href="../codefi-product/" data-reveal>
+        <div>
+          <span class="lbl">Next case study</span>
+          <h3>Codefi: designing the handoff from a conversational AI into a structured product</h3>
+        </div>
+        <span class="arw">→</span>
+      </a>
+
+    </div>
+  </div>
+
+  <footer class="foot">
+    <span>Springfield, MO</span>
+    <div class="links">
+      <a href="mailto:shantanukashyapsmhs@gmail.com">shantanukashyapsmhs@gmail.com</a>
+      <a href="https://www.linkedin.com/in/shantanu-kashyap/">LinkedIn ↗</a>
+      <a href="https://github.com/sketches-to-scale">GitHub ↗</a>
+      <a href="../">All work</a>
+    </div>
+  </footer>
+
+</div>
+</main>
+
+<script src="../motion.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<!-- v3 case study architecture, third Codefi book. The SYSTEMS & TOOLING
+     half of the job: work that doesn't belong to either the product story
+     (codefi-product.html) or the growth story (codefi-growth.html)
+     because it wasn't done to ship a feature or run a campaign, it was
+     done to make the other two faster. Structure per
+     Case-Study-Architecture-Spec.md. The only <section> children of
+     .case-prose are chapters, which is what lets .chap:nth-of-type() own
+     the striping. -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" href="../img/favicon.png">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Codefi, systems &amp; tooling, Shantanu Kashyap</title>
+<meta name="description" content="A token architecture built before the code existed, and an MCP-based content engine built because off-the-shelf output looked AI-generated. Two systems, same instinct.">
+<meta property="og:title" content="Codefi, systems &amp; tooling, Shantanu Kashyap">
+<meta property="og:description" content="Product, growth, then the tooling to do both faster.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+<style>
+  :root { --accent: #483174; --accent-soft: #EFECF3; }
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+<div class="progress" aria-hidden="true"></div>
+
+<nav class="nav">
+  <div class="wrap">
+    <a class="mark" href="../">
+      <span class="glyph">SK</span>
+      <span class="mark-name">Shantanu Kashyap</span>
+    </a>
+    <div class="navlinks">
+      <a href="../" class="current" aria-current="true">Work</a>
+      <a href="../about/">About</a>
+      <a href="https://drive.google.com/file/d/1TjVQ_KrvfItAI4MKjaeZ77ZZIEZ_f_Ml/view?usp=sharing" target="_blank" rel="noopener">Resume</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main" tabindex="-1">
+<div class="wrap">
+
+  <!-- ============================ HEADER ============================ -->
+  <div class="intro-band intro-band--dark intro-band--split">
+    <header class="case-hero case-hero--side">
+      <div class="case-hero-copy">
+        <span class="kicker kicker--accent" data-reveal style="--i:0">Traction Studio AI · Codefi · Systems &amp; tooling · Sept 2025 – present</span>
+        <h1 data-reveal style="--i:1">Product, growth, then the tooling to do both faster</h1>
+      </div>
+
+      <div class="hero-shots hero-shots--stack" data-reveal style="--i:2">
+        <div class="hshot hshot--1" style="--i:0">
+          <img class="shot-img" src="../img/codefi-tooling-hero-token-architecture.png" alt="Token architecture" loading="eager">
+        </div>
+        <div class="hshot hshot--2" style="--i:1">
+          <img class="shot-img" src="../img/codefi-tooling-hero-codefeed.png" alt="Codefeed" loading="eager">
+        </div>
+        <div class="hshot hshot--3" style="--i:2">
+          <img class="shot-img" src="../img/codefi-tooling-hero-vibeathon-brand.png" alt="Vibeathon brand system" loading="eager">
+        </div>
+      </div>
+  </header>
+    <svg class="case-hero-wave" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0,56 C 480,6 960,102 1440,40 L1440,120 L0,120 Z"></path>
+    </svg>
+  </div>
+
+  <div class="intro-info">
+    <div class="case-facts" data-reveal style="--i:3">
+      <div><span class="k">Role</span><span class="v">Sole builder, directing AI as an implementation partner</span></div>
+      <div><span class="k">Scope</span><span class="v">Design systems and internal tooling</span></div>
+      <div><span class="k">Surface</span><span class="v">Codefi Dev Studio + Codefeed</span></div>
+      <div><span class="k">Status</span><span class="v">One shipped as a system, one in active use</span></div>
+    </div>
+
+    <div class="tldr" id="tldr" data-reveal style="--i:4">
+      <span class="tldr-lbl">In short</span>
+      <div class="tldr-split">
+        <p class="tldr-lead">When the work in front of me needed better raw material, I built the tooling for it myself instead of waiting for someone else to.</p>
+        <div class="tldr-facts">
+          <p><b>Built, twice:</b> a token system before a line of production code existed, and an MCP-based content engine now running in production.</p>
+          <p><b>Judgment, not just execution:</b> turned down a faster route that would've broken the token system's alias chain, a cheaper storyboard that risked identity drift, and a model upgrade that cost 3x without earning it.</p>
+          <p><b>Verification:</b> the token system never ended up used, and Codefeed's ad performance hasn't run long enough to measure.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="case-transition split" data-reveal>
+      <p class="lede">This is the third track alongside product and growth: when the work needed better primitives to run on, I built those myself instead of asking for more headcount or budget.</p>
+      <p class="lede">Both systems on this page were built the same way, directing AI as an implementation partner rather than hand-coding everything myself, reviewing what came back against a real spec, and rejecting the fast wrong answer when it mattered.</p>
+    </div>
+  </div>
+
+  <aside class="rail" aria-label="Section navigation">
+    <div class="rail-lbl">On this page</div>
+    <div class="rail-scroll">
+      <ol>
+        <li><a href="#tokens"><span class="n">01</span> Investing in systems before the code existed</a></li>
+        <li><a href="#codefeed"><span class="n">02</span> Building the tool because the output looked AI-generated</a></li>
+      </ol>
+    </div>
+  </aside>
+
+  <!-- ============================ BODY ============================ -->
+  <div class="case-body case-body--lilac">
+
+    <div class="case-prose">
+
+      <!-- ================= PAGE COVER ================= -->
+      <header class="pcover">
+        <div class="pcover-head" data-reveal>
+          <span class="kicker">
+            <span class="chip-word fig-pop" style="--i:0">Design Systems</span>
+            <span class="chip-word fig-pop" style="--i:1">AI Tooling</span>
+            <span class="chip-word fig-pop" style="--i:2">Self-directed</span>
+          </span>
+          <h2>Two systems, built the same way</h2>
+          <p class="dek">A token architecture and a content-generation tool don't look related from the outside. Both exist because I noticed the work in front of me needed better raw material and decided to build it rather than wait for someone else to prioritize it.</p>
+          <p class="dek">Neither was a roadmap item. Both got built anyway, on the same instinct: notice the constraint, then go fix it.</p>
+        </div>
+        <div class="pcover-visual" data-reveal style="--i:2">
+          <img class="pcover-img" src="../img/codefi-tooling-two-systems-showcase.png" alt="The token architecture and Codefeed, the two systems built on the same instinct." loading="lazy" decoding="async">
+        </div>
+      </header>
+
+      <!-- ================= CHAPTER 01 · tokens ================= -->
+      <section class="chap" id="tokens">
+
+        <div class="chap-head" data-reveal>
+          <span class="chap-kicker"><span class="idx">01</span> Codefi Dev Studio · Craft &amp; process · Never used</span>
+          <h2>Investing in systems before the code existed</h2>
+          <p class="dek">This one has no outcome. What it shows is how I work when nobody is grading the result.</p>
+          <div class="case-facts">
+            <div><span class="k">Context</span><span class="v">Scoping for a multi-surface enterprise engagement</span></div>
+            <div><span class="k">Role</span><span class="v">Sole builder, directing AI rather than prompting it</span></div>
+            <div><span class="k">Architecture</span><span class="v">Global → Semantic → Component</span></div>
+            <div><span class="k">Status</span><span class="v">Never used, engagement fell through</span></div>
+          </div>
+        </div>
+
+        <div class="beat beat--illo" data-reveal>
+          <h3>Built early, never used</h3>
+          <div class="split split--lead">
+            <p>Codefi Dev Studio was scoping a large multi-surface enterprise engagement. Before any production code existed, I built the token architecture the surfaces would have shared, on sanctioned work time: a three-tier system, Global → Semantic → Component, with a hard no-hex-in-semantic rule. It was never meant to be deployed on its own, it was internal infrastructure for surfaces that would consume it. The engagement died before implementation, so it never ended up being used, and never ran outside <code>npm run dev</code>.</p>
+            <p>At ConGenius I shipped for three years without a design system and paid for it weekly, duplicated work, inconsistent states, patterns re-solved for lack of a canonical version. This was me refusing to do that again, the moment I had the chance to build one from scratch.</p>
+          </div>
+        
+          <figure class="case-illo">
+            <div class="illo-frame">
+                <img src="../img/codefi-tokens-mismatched-swatches.png"
+                 alt="A developer holding a fistful of mismatched loose colour swatches that refuse to line up."
+                 width="1024" height="768" loading="lazy" decoding="async">
+              <span class="illo-tag fig-pop" style="--x:1%;--y:4%;--i:1">picks a value</span>
+              <span class="illo-tag fig-pop illo-tag--r" style="--x:1%;--y:88%;--i:2">next person picks another</span>
+              </div>
+              <figcaption class="cap">Colour values decided again by whoever is closest to the file.</figcaption>
+            </figure>
+        </div>
+
+        <figure class="case-shot" data-reveal>
+          <img class="case-shot-img" src="../img/codefi-tooling-tokenstudio-globaltocomponent.png" alt="Global → Semantic → Component, with a hard no-hex-in-semantic rule." loading="lazy" decoding="async">
+          <figcaption class="cap">Global → Semantic → Component, with a hard no-hex-in-semantic rule. The alias chain is the whole value of the system; anything that breaks it makes the system decorative.</figcaption>
+        </figure>
+
+        <div class="mini-grid" data-reveal>
+          <div class="mini">
+            <h4>The DTCG-compliance pushback</h4>
+            <p>There was a faster route available that would have broken the alias chain. <b>I pushed back and kept the system spec-compliant instead</b>, because a token system whose aliases don't resolve is just a colour palette with extra steps.</p>
+            <span class="status">Held the line</span>
+          </div>
+          <div class="mini">
+            <h4>The systematic-audit call</h4>
+            <p>Manual whack-a-mole testing kept missing things. I stopped and switched to a systematic pass across every component, and caught <b>30+ mis-wired components</b> in one sweep.</p>
+            <span class="status">30+ caught</span>
+          </div>
+          <div class="mini">
+            <h4>The shadcn/Radix catch</h4>
+            <p>I asked whether these were real shadcn components or just things that looked like them. They were the latter. The answer changed the build approach, and <b>would have changed it much more expensively three weeks later</b>.</p>
+            <span class="status">Changed the plan</span>
+          </div>
+        </div>
+
+        <figure class="case-shot" data-reveal>
+          <img class="case-shot-img" src="../img/codefi-tooling-tokenstudio-showcase.png" alt="The token system as it existed: Global, Semantic, and Component tiers, in the dev environment, the only place it ever ran." loading="lazy" decoding="async">
+          <figcaption class="cap">The token system as it existed, in the dev environment, the only place it ever ran.</figcaption>
+        </figure>
+
+        <div class="beat beat--wide" data-reveal>
+          <h3>Directing AI, not prompting it</h3>
+          <div class="split">
+            <p>This was the first time I worked with AI as an implementation partner rather than an autocomplete: setting the architecture, reviewing what came back against the spec, and <b>rejecting the fast wrong answer more than once</b>. The DTCG pushback and the systematic audit are both examples of that. It's how I now work at Codefi on an AI-native product, and how I built Codefeed.</p>
+            <p>What changed permanently: I now default to building the infrastructure and tooling before the feature code, on any project with ambiguity at scale. Three years of paying for not having a system, and then once refusing to, is where that came from.</p>
+          </div>
+        </div>
+
+      </section>
+
+      <p class="tween" data-reveal>The next time I built something nobody had asked for, it shipped.</p>
+
+      <!-- ================= CHAPTER 02 · codefeed ================= -->
+      <section class="chap" id="codefeed">
+
+        <div class="chap-head" data-reveal>
+          <span class="chap-kicker"><span class="idx">02</span> Codefeed · Internal tooling · In active use</span>
+          <h2>Building the tool because the output looked AI-generated</h2>
+          <p class="dek">Ad creative generated through Gemini's Veo was <b>technically clean and still read as synthetic</b>. That's a craft judgment, not an engineering one, so craft is what I applied to fix it.</p>
+          <div class="case-facts">
+            <div><span class="k">Built</span><span class="v">Codefeed, an MCP-based content engine</span></div>
+            <div><span class="k">Predecessor</span><span class="v">XML Prompt Architect</span></div>
+            <div><span class="k">Role</span><span class="v">Sole builder, directing AI as an implementation partner</span></div>
+            <div><span class="k">Status</span><span class="v">In active use, 38 real paid generations</span></div>
+          </div>
+        </div>
+
+        <div class="beat beat--illo" data-reveal>
+          <h3>What I built</h3>
+          <div class="split split--lead">
+            <p>Codefeed calls image, video, voice, and avatar generation vendors directly, no vendor web UIs, driven through a conversation with an AI assistant rather than a form. I made the MCP server part of the first version rather than something added after a UI existed, so any caller, not just whoever opened the app, gets the same tool.</p>
+            <p>The brand defaults ship pre-populated rather than blank, with explicit negative constraints (no cinematic color grading, no anamorphic lens flares) and one governing instruction: <b>shot-on-iPhone energy, not a cinema camera</b>. That line is the actual fix for the problem that started the project.</p>
+          </div>
+        
+          <figure class="case-illo">
+            <div class="illo-frame">
+                <img src="../img/codefi-codefeed-scrolling-past.png"
+                 alt="A commuter scrolling a phone and pulling a faintly unimpressed face at what he sees."
+                 width="1024" height="768" loading="lazy" decoding="async">
+              <span class="illo-tag fig-pop" style="--x:1%;--y:4%;--i:1">sees the ad</span>
+              <span class="illo-tag fig-pop illo-tag--r" style="--x:1%;--y:20%;--i:2">clocks it as AI</span>
+              <span class="illo-tag fig-pop illo-tag--r" style="--x:1%;--y:82%;--i:3">keeps scrolling</span>
+              </div>
+              <figcaption class="cap">Someone scrolling past an ad.</figcaption>
+            </figure>
+        </div>
+
+        <div class="mini-grid" data-reveal>
+          <div class="mini">
+            <h4>"Wasn't 3x better"</h4>
+            <p>A newer video model tested as more prompt-accurate than the one already in use, at roughly 3x the cost per second. I didn't promote it. Whether an upgrade earns its price multiple is now how I evaluate every model swap.</p>
+            <span class="status">Reusable heuristic</span>
+          </div>
+          <div class="mini">
+            <h4>The cheaper storyboard, rejected</h4>
+            <p>One combined image standing in for six shots would have cost less per board. I turned it down: the tool anchors identity from real reference photos, and nothing confirmed that identity holds across multiple sub-scenes inside a single generated image.</p>
+            <span class="status">Rejected on purpose</span>
+          </div>
+          <div class="mini">
+            <h4>No batch button</h4>
+            <p>There's no "run all approved shots" tool, on purpose. Batching the execution would have quietly weakened the cost-confirmation step exactly where spend could stack up fastest.</p>
+            <span class="status">Declined by design</span>
+          </div>
+        </div>
+
+        <figure class="case-shot" data-reveal>
+          <img class="case-shot-img" src="../img/codefi-tooling-codefeed-conversation-flow.png" alt="Codefeed's conversation flow: chat request, prompt assembly, cost confirmation, generation." loading="lazy" decoding="async">
+          <figcaption class="cap">Codefeed's conversation flow: chat request, prompt assembly, cost confirmation, generation.</figcaption>
+        </figure>
+
+        <div class="beat beat--wide" data-reveal>
+          <h3>The tool before this one</h3>
+          <div class="split">
+            <p>Codefeed has a predecessor, the XML Prompt Architect, a structured-prompt tool I built earlier for the same reason: consistent output across generations. It's what produced the Vibeathon brand and Codefi's isometric graphics, both shipped. Codefeed is the more integrated version of the same idea: an MCP server instead of a standalone tool, five vendor APIs instead of one, and a real test suite built for repeated production use instead of one-off runs.</p>
+          </div>
+        </div>
+
+        <div class="beat" data-reveal>
+          <h3>Where it doesn't work, and one place it made things worse</h3>
+          <div class="split">
+            <p><b>Light mode is the clearest edge.</b> Our UI was dark-native and I needed the light counterpart. I gave the model the palette and the equivalences and it could not produce a usable version, because theming is not a colour-mapping problem: what recedes on dark does not recede on light, so the hierarchy has to be re-decided rather than translated. It was genuinely useful for narrowing which colours to promote as accents. <b>Inspiration, not output.</b></p>
+            <p>The worse one wasn't in my hands. Marketing began generating campaign briefs with AI, and a campaign due to launch in four days would arrive as forty pages proposing seven phases, written for a company with a department behind each one. Nobody asked me to follow it. But our outside agency treated those documents as the source of truth and stopped bringing ideas of their own. <b>A generated plan has no budget inside it:</b> it will recommend seven audience segments without noticing that at twenty dollars a day, that is three dollars a segment and buys nothing.</p>
+          </div>
+          <div class="kv-group">
+            <div class="kv"><span class="k">Where it earns its place</span><span class="v">The ideation end, where the output is meant to be thrown away. A marketing-site page now starts as a wireframe generated against a spec of our real Framer components, gets iterated, and goes to the team before I have built anything. The review lands ahead of the craft time instead of after it</span></div>
+            <div class="kv"><span class="k">Where it doesn't</span><span class="v">Anything needing a judgment to hold across two contexts at once, and any plan a third party will treat as settled</span></div>
+          </div>
+        </div>
+
+        <div class="note note--split" data-reveal><span class="lbl">Why it exists, and what isn't measured</span><div class="note-body"><p>The goal was raising the creative bar, not spending a budget. Grant-funded ad pushes made the timing matter, but they're not why the tool exists.</p><p>Codefeed is in active use, but ad-performance data from Codefeed-sourced creative doesn't exist yet. It hasn't run in a live campaign long enough to measure.</p></div></div>
+
+      </section>
+
+      <a class="pager" href="../codefi-product/" data-reveal>
+        <div>
+          <span class="lbl">The product side of this job</span>
+          <h3>Codefi: designing the handoff from a conversational AI into a structured product</h3>
+        </div>
+        <span class="arw">→</span>
+      </a>
+
+      <a class="pager" href="../codefi-growth/" data-reveal>
+        <div>
+          <span class="lbl">The growth side of this job</span>
+          <h3>Codefi: the strategy I wrote, and the paid motion I ran</h3>
+        </div>
+        <span class="arw">→</span>
+      </a>
+
+      <a class="pager" href="../congenius-product/" data-reveal>
+        <div>
+          <span class="lbl">Next case study</span>
+          <h3>ConGenius: three years as the only designer</h3>
+        </div>
+        <span class="arw">→</span>
+      </a>
+
+    </div>
+  </div>
+
+  <footer class="foot">
+    <span>Springfield, MO</span>
+    <div class="links">
+      <a href="mailto:shantanukashyapsmhs@gmail.com">shantanukashyapsmhs@gmail.com</a>
+      <a href="https://www.linkedin.com/in/shantanu-kashyap/">LinkedIn ↗</a>
+      <a href="https://github.com/sketches-to-scale">GitHub ↗</a>
+      <a href="../">All work</a>
+    </div>
+  </footer>
+
+</div>
+</main>
+
+<script src="../motion.js" defer></script>
+</body>
+</html>
