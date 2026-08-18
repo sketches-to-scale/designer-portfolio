@@ -2,3 +2,6 @@ User-agent: *
 Allow: /
 
 Sitemap: https://shantanukashyap.me/sitemap.xml
+
+# Structured summary of this site for AI/LLM tools:
+# https://shantanukashyap.me/llms.txt

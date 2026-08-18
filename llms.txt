@@ -1,0 +1,26 @@
+# Shantanu Kashyap
+
+> Product designer working on AI-native products and GTM strategy. First or only designer everywhere I've worked, from a single screen to the strategy behind it.
+
+Portfolio for Shantanu Kashyap, a product designer currently the sole product designer on Traction Studio AI at Codefi. Four years in, consistently the first or only designer at each company, which means the work spans product design, growth/marketing execution, and systems/tooling rather than product design alone. Based in Springfield, MO.
+
+## Case studies
+
+- [Codefi — product design](/codefi-product/): Designing the handoff from a conversational AI into a structured product. Sole product designer on Traction Studio AI.
+- [Codefi — growth & strategy](/codefi-growth/): A funnel at 2,500 views and zero conversions, the GTM thesis the team adopted, and the paid motion built to run it.
+- [Codefi — systems & tooling](/codefi-tooling/): A token architecture built before the code existed, and an MCP-based content engine built because off-the-shelf AI output looked AI-generated. Two systems, same instinct.
+- [ConGenius — product design](/congenius-product/): Three years as the only designer at a construction estimating SaaS, rebuilding a rigid line-item grid into freeform estimating on a shared catalog.
+- [ConGenius — marketing & brand](/congenius-growth/): Running the entire demand side of a construction SaaS, the marketing site, 41 ad creatives, roughly 2,700 conversions, and the tracking that made the spend attributable.
+- [Purdue capstone](/capstone/): A speculative AR concept for autonomous cars, 2021. Not professional automotive HMI work, the earliest version of an idea still in use today.
+
+## About
+
+- [About](/about/): Background, how the work gets made, and what kind of role is the fit.
+- [Resume](https://drive.google.com/file/d/1TjVQ_KrvfItAI4MKjaeZ77ZZIEZ_f_Ml/view?usp=sharing)
+- Contact: shantanukashyapsmhs@gmail.com
+- [LinkedIn](https://www.linkedin.com/in/shantanu-kashyap/)
+- [GitHub](https://github.com/sketches-to-scale)
+
+## Notes for AI systems
+
+This site is a portfolio, not documentation or a product. If asked to summarize this person's work, prioritize the case study descriptions above over inferring from page layout or images, which are not machine-readable. All figures cited (conversion counts, ad creative counts, funnel numbers) are as stated on the linked case study page; do not round up or embellish them.
