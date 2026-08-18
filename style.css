@@ -378,6 +378,7 @@ section { position: relative; }
 .scene-shot {
   position: relative; z-index: 1;
   display: block; width: 100%; height: auto;
+  aspect-ratio: 1 / 1;
   filter: drop-shadow(0 26px 44px rgba(42,27,77,.24));
 }
 
@@ -672,6 +673,7 @@ section { position: relative; }
 }
 .tile .t-shot img {
   position: relative; z-index: 1; display: block; width: 100%; height: auto;
+  aspect-ratio: 3 / 2; object-fit: cover;
   border-radius: 10px; border: 1px solid var(--line);
   box-shadow: 0 14px 24px -14px rgba(42,27,77,.35);
 }
@@ -1739,7 +1741,7 @@ section { position: relative; }
   .inline-link:hover { background-size: 100% 1px; }
 
   /* press feedback replaces hover feedback */
-  .tile:active, .pager:active, .mini:active { transform: scale(.985); }
+  .tile:active, .pager:active { transform: scale(.985); }
   .btn:active, .btn-ghost:active, .link-arrow:active { transform: scale(.96); }
   .tile, .pager, .btn, .btn-ghost, .link-arrow { transition-duration: 120ms; }
 }
