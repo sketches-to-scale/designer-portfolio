@@ -370,8 +370,8 @@ section { position: relative; }
 
 .scene-blob {
   position: absolute; z-index: 0;
-  top: -2%; right: -10%;
-  width: 88%; height: 88%;
+  bottom: 3%; right: -4%;
+  width: 76%; height: 76%;
   transform: rotate(-4deg);
 }
 
@@ -379,7 +379,41 @@ section { position: relative; }
   position: relative; z-index: 1;
   display: block; width: 100%; height: auto;
   aspect-ratio: 1 / 1;
-  filter: drop-shadow(0 26px 44px rgba(42,27,77,.24));
+  filter: drop-shadow(0 18px 32px rgba(42,27,77,.14));
+}
+
+/* Hero annotation layer: small badges naming what each thought bubble
+   stands for, a hand-drawn arrow, and a handwritten "and that's me" aside.
+   Positioned in percentages against the .scene box so they scale with the
+   image; first-pass placement, expect this to need visual tuning. */
+.scene-annotations {
+  position: absolute; inset: 0; z-index: 2; pointer-events: none;
+}
+.scene-tag {
+  position: absolute;
+  font-family: "Raleway", sans-serif; font-weight: 500; font-size: 0.7rem;
+  color: var(--ink-2); background: var(--surface);
+  border: 1px solid var(--line); border-radius: 999px;
+  padding: 4px 11px; white-space: nowrap;
+}
+/* Rotation and centering use the standalone `rotate`/`translate` properties
+   rather than `transform`, so they survive untouched when .fig-pop's own
+   `transform: scale()` animation runs and resolves to `transform: none`.
+   Pulled in tight to each bubble rather than floating at the image edges. */
+.scene-tag--strategy { top: -4%; left: -2%; rotate: -3deg; }
+.scene-tag--craft    { top: -9%; left: 50%; translate: -50% 0; }
+.scene-tag--growth   { top: -4%; right: 10%; rotate: 3deg; }
+
+/* "and that's me": handwritten aside sitting under the illustration.
+   (Arrow tried and dropped — it never read as pointing at anything once
+   the note was centered under the whole scene rather than under him.) */
+.scene-note-wrap {
+  position: absolute; bottom: -9%; left: 40%; translate: -50% 0;
+  display: flex; align-items: flex-end; gap: 4px;
+}
+.scene-note {
+  font-family: "Caveat", cursive; font-weight: 600; font-size: 1.6rem;
+  color: var(--accent); rotate: -4deg;
 }
 
 /* Bigger settle-in for the hero illustration specifically, a more
