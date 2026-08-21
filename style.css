@@ -1563,7 +1563,11 @@ section { position: relative; }
 /* ---- tablet / small laptop ---- */
 @media (max-width: 1000px) {
   .hero-copy { grid-column: 1 / span 12; }
-  .hero-vis  { grid-column: 1 / span 12; padding-top: 10px; max-width: 440px; }
+  /* Extra top clearance: the scene-tag annotations float above the
+     illustration itself (negative top offsets, e.g. -9%), so a small
+     padding-top here let them bleed up into the CTA row above on
+     narrow viewports. Bumped to give the highest tag room to clear it. */
+  .hero-vis  { grid-column: 1 / span 12; padding-top: 56px; max-width: 440px; }
   .hero { padding: 96px 0 96px; }
   .tile { grid-column: span 3; }
 
