@@ -22,6 +22,12 @@
 <meta property="og:title" content="Codefi, product design, Shantanu Kashyap">
 <meta property="og:description" content="Designing the handoff from a conversational AI into a structured product.">
 <meta property="og:type" content="article">
+<meta property="og:image" content="https://shantanukashyap.me/img/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Shantanu Kashyap, Product Designer. AI-native products, GTM strategy.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://shantanukashyap.me/img/og-image.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
@@ -90,7 +96,7 @@
       <div class="tldr-split">
         <p class="tldr-lead">I own the handoff between a conversational AI and the structured product it becomes. I own it alone.</p>
         <div class="tldr-facts">
-          <p><b>Scope:</b> 0→1, solo. The entire paid surface, not a slice of it.</p>
+          <p><b>Scope:</b> 0→1, solo. The entire paid surface.</p>
           <p><b>Pattern:</b> reframed a required wait as onboarding, four separate modules as one shared system, and now I'm designing for a model that can be confidently wrong.</p>
           <p><b>Verification:</b> the onboarding sequence shipped. Scale and the AI patterns are still in progress, with no outcome data yet.</p>
         </div>
@@ -162,12 +168,12 @@
         <div class="beat beat--illo" data-reveal>
           <h3>The core decision</h3>
           <div class="split split--lead">
-            <p>The request was a loading screen. Rather than build it, I went and asked what the wait was actually for, why the range was that wide, and what would be different on the other side of it. Two things came out of that. Founders arrive at Scale having never seen it, so <b>onboarding was going to be the next thing asked of me anyway</b>. And they are already stopped, already expecting the product to appear. Putting the orientation in the window collapsed two pieces of work into one, and meant neither had to be built twice.</p>
-            <p>So: a <b>5-slide onboarding sequence</b> instead of a spinner. <b>That is the exact window engineering needed</b>, spent on the thing the founder needed next.</p>
+            <p>The request was a loading screen. Before building it, I asked what the wait was actually for, why the range was that wide, and what would be different on the other side of it. Two things came out of that. Founders arrive at Scale having never seen it, so <b>onboarding was going to be the next thing asked of me anyway</b>. And they are already stopped, already expecting the product to appear. Putting the orientation in the window collapsed two pieces of work into one, and meant neither had to be built twice.</p>
+            <p>So the spinner became a <b>5-slide onboarding sequence</b>. <b>That is the exact window engineering needed</b>, spent on the thing the founder needed next.</p>
             <ul>
               <li>Reframes a stated requirement ("loading screen") into a value-additive moment ("onboarding")</li>
               <li>Solves two unmet needs at once: the engineering latency buffer, and first-time orientation to a surface the user has never seen</li>
-              <li><b>Five slides is not an arbitrary number</b>: Scale has five tabs, so the sequence runs one tab per slide, in the order a founder meets them</li>
+              <li><b>Five slides maps to five tabs</b>: the sequence runs one tab per slide, in the order a founder meets them</li>
               <li>Creates a reusable pattern for any future moment where the product does heavy backend work</li>
             </ul>
           </div>
@@ -189,7 +195,7 @@
           <figcaption class="cap">The 5-slide onboarding sequence, replacing the loading state.</figcaption>
         </figure>
 
-        <p class="beat beat--wide" data-reveal>The continue button stays disabled if a founder gets through the slides first, because there is nowhere to send them yet. <b>The tooltip is for the people who skip onboarding</b>, hit a dead button, and would assume it was broken. It says the environment is still being set up and nothing about why, because the reason is ours, not theirs.</p>
+        <p class="beat beat--wide" data-reveal>The continue button stays disabled if a founder gets through the slides first, because there is nowhere to send them yet. <b>The tooltip is for the people who skip onboarding</b>, hit a dead button, and would assume it was broken. It says the environment is still being set up and nothing about why, because the why is our problem.</p>
 
       </section>
 
@@ -244,10 +250,10 @@
         <div class="beat" data-reveal>
           <h3>The research I pushed for, and why losing that argument was right</h3>
           <div class="split">
-            <p>I wanted to do more research before designing. The team was in ship-1.0-and-iterate mode, and I lost that one. They were right, and working out why changed how I choose a method rather than just how I felt about the decision.</p>
+            <p>I wanted to do more research before designing. The team was in ship-1.0-and-iterate mode, and I lost that one. They were right, and working out why changed how I choose a method.</p>
             <p><b>Research has a shelf life</b>, and the length of it depends on how fast the ground moves. Construction estimating hasn't changed in decades, so what I learned there held for three years. This is the opposite case. Since I joined, general AI chat tools got good enough that "a structured system beats a chat window" stopped being our differentiator, and the product has moved because of it. <b>Research done in month one would have described a market that no longer existed by month six</b>.</p>
           </div>
-          <p style="max-width:none">So the method follows the domain. Stable context: research, design, iterate, launch. Context moving underneath you: build, ship, watch what breaks, iterate. Choosing the wrong one of those costs about the same either way, and I had been treating the first as the professional default rather than as one of two options.</p>
+          <p style="max-width:none">So the method follows the domain. Stable context: research, design, iterate, launch. Context moving underneath you: build, ship, watch what breaks, iterate. Choosing the wrong one of those costs about the same either way, and I had been treating the first as the professional default, when it is one of two options.</p>
         </div>
 
         <figure class="case-shot" data-reveal>
@@ -263,7 +269,7 @@
           </div>
           <div class="mini">
             <h4>Making the assistant findable</h4>
-            <p>It sat tucked in a corner where it read as a help widget, so founders were not finding the most useful thing in the product. Moved it and gave it a soft glow, so discovery happens on its own rather than needing a tour to explain it.</p>
+            <p>It sat tucked in a corner where it read as a help widget, so founders were not finding the most useful thing in the product. Moved it and gave it a soft glow, so founders find it on their own.</p>
             <span class="status">Shipped</span>
           </div>
         </div>
@@ -272,14 +278,14 @@
           <h3>Pricing: three ways to cover a cost, and why one line won</h3>
           <div class="split">
             <p>Scale runs a live environment per founder, costing real money from the moment it starts. We wanted it running the second someone entered, because agents producing something on arrival is the value. So the cost lands before anyone knows whether that user pays.</p>
-            <p>The model before this was a flat fee per project, with one step free so a founder could judge the output before paying. It assumed someone committed enough to a single idea to put several hundred dollars behind it largely sight unseen. <b>Early-stage founders are not committed to one idea, they are shopping between several</b>, and that assumption broke first.</p>
+            <p>The model before this was a flat fee per project, with one step free so a founder could judge the output before paying. It assumed someone committed enough to a single idea to put several hundred dollars behind it largely sight unseen. <b>Early-stage founders are shopping between several ideas at once</b>, and that assumption broke first.</p>
             <p>Three options were on the table for what replaced it. <b>Absorb it</b>, and run instances for people who had not paid. <b>Raise the price of Build</b> to subsidise it, then charge again for actually using Scale. Or <b>one price at one gate</b>. I argued for the last, and my reason was as much marketing as product: I was going to be the person selling this, and a page that advertises one number then asks for a second the moment you finish a step converts worse and explains worse. <b>A pricing model has to be sayable in one sentence.</b></p>
           </div>
         </div>
 
-        <div class="note note--split" data-reveal><span class="lbl">How disagreements get settled here</span><div class="note-body"><p>There are no reworked-it-twice stories on this page, and that is not because nobody pushes back. I work with our PO closer to a co-owner than a recipient: approaches, trade-offs and the reasons for and against get talked through before I open a file.</p><p>Disagreement surfaces as a conversation about the spec rather than a round of discarded mockups. <b>Rework still happens</b>, when user sessions say it should, and then we run the same conversation again with better information. What has not happened here is rework caused by never having had the conversation, which is the clearest difference between this job and the last one.</p></div></div>
+        <div class="note note--split" data-reveal><span class="lbl">How disagreements get settled here</span><div class="note-body"><p>There are no reworked-it-twice stories on this page, and that is not because nobody pushes back. I work with our PO as a co-owner of the spec: approaches, trade-offs and the reasons for and against get talked through before I open a file.</p><p>Disagreement surfaces as a conversation about the spec, before anyone has drawn anything. <b>Rework still happens</b>, when user sessions say it should, and then we run the same conversation again with better information. What has not happened here is rework caused by never having had the conversation, which is the clearest difference between this job and the last one.</p></div></div>
 
-        <div class="note" data-reveal><span class="lbl">Where this stands</span><div class="note-body">Scale is still in progress, not fully shipped. The system and surface are designed end to end.</div></div>
+        <div class="note" data-reveal><span class="lbl">Where this stands</span><div class="note-body">Scale is still in progress. The system and surface are designed end to end.</div></div>
 
       </section>
 
@@ -310,12 +316,12 @@
         <div class="beat beat--illo" data-reveal>
           <h3>Three patterns, applied across the product</h3>
           <div class="split split--lead">
-            <p>These aren't features so much as a set of defaults I apply wherever the model touches the interface, and they're <b>the part of this job with the least existing convention to borrow from</b>.</p>
-            <p>The same question came up larger when the product's agentic direction was being set. <b>I argued it should automate what a founder can already do by hand, not quietly take over running their company.</b> The test is whether someone can still answer for a decision the product made for them. That position held, and it is the line I would defend hardest on any AI product.</p>
-            <p><b>Confidence scores were the obvious pattern and we turned them down</b>, on positioning rather than interface. Traction Studio should read as a programme a founder is working through, and a percentage beside the output breaks that frame in one glance. Once it reads as general-purpose AI, it competes with general-purpose AI.</p>
+            <p>These are defaults I apply wherever the model touches the interface, and they're <b>the part of this job with the least existing convention to borrow from</b>.</p>
+            <p>The same question came up larger when the product's agentic direction was being set. <b>I argued it should automate what a founder can already do by hand, and stop short of running the company for them.</b> The test is whether someone can still answer for a decision the product made for them. That position held, and it is the line I would defend hardest on any AI product.</p>
+            <p><b>Confidence scores were the obvious pattern and we turned them down</b>, on positioning grounds. Traction Studio should read as a programme a founder is working through, and a percentage beside the output breaks that frame in one glance. Once it reads as general-purpose AI, it competes with general-purpose AI.</p>
             <ul>
               <li><b>Contextual awareness indicators:</b> showing the user what the assistant currently knows about them and their company, so a wrong answer traces back to a specific, checkable input</li>
-              <li><b>Structured input scaffolds:</b> something to answer into instead of an empty field. The product is a sequence, and an answer that wanders off its step produces output built on the wrong inputs</li>
+              <li><b>Structured input scaffolds:</b> the blank box gets replaced with something shaped to answer into. The product is a sequence, and an answer that wanders off its step produces output built on the wrong inputs</li>
               <li><b>Transparency messaging for hallucination mitigation:</b> saying plainly, at the moment output is generated, where it came from and that it should be checked before anyone acts on it</li>
             </ul>
           </div>
@@ -346,7 +352,7 @@
         <div class="chap-head" data-reveal>
           <span class="chap-kicker"><span class="idx">04</span> Traction Studio AI · Product design · In progress</span>
           <h2>Beyond the prototype</h2>
-          <p class="dek">Every module started as a light, functional prototype. Turning that into a shippable product was its own body of work, spread across the whole surface rather than concentrated in one decision.</p>
+          <p class="dek">Every module started as a light, functional prototype. Turning that into a shippable product was its own body of work, spread thin across the whole surface.</p>
           <div class="case-facts">
             <div><span class="k">Surface</span><span class="v">Traction Studio AI, across every module</span></div>
             <div><span class="k">Role</span><span class="v">Sole designer</span></div>
@@ -358,7 +364,7 @@
         <div class="beat beat--illo" data-reveal>
           <h3>The rest of the surface</h3>
           <div class="split">
-            <p>The rest of a 0→1 product is ordinary by comparison, and it is most of the surface. <b>Navigation was the biggest of it:</b> targets too small to hit reliably, hover states that behaved differently depending on where you were, and a layout that did not survive a phone. The fix was less a better idea than one consistent idea applied everywhere, so finding a tool stopped depending on having found it once already.</p>
+            <p>The rest of a 0→1 product is ordinary by comparison, and it is most of the surface. <b>Navigation was the biggest of it:</b> targets too small to hit reliably, hover states that behaved differently depending on where you were, and a layout that did not survive a phone. The fix was one consistent idea applied everywhere, so finding a tool stopped depending on having found it once already.</p>
             <p>Then layouts from placeholder to real content, and patterns applied across the surface that had only ever existed on one screen. <b>None of it reduces to a decision worth its own chapter</b>, which is why it is here: it is the volume of work between a working prototype and something you can hand a founder.</p>
           </div>
         
